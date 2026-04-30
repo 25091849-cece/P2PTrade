@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2PTrade | Create Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <main class="min-h-screen flex flex-col lg:flex-row items-center justify-center px-8 lg:px-14 py-12 lg:py-20 gap-8 lg:gap-12">
+    <section class="auth-panel w-full max-w-[360px] mt-8 lg:mt-0" aria-label="Create account form">
+      <h2>Create Account</h2>
+      <p class="subtitle">Start trading currencies globally</p>
+
+      <form class="auth-form" action="#" method="post">
+        {% csrf_token %}
+        <label for="full_name">Full Name</label>
+        <input id="full_name" type="text" name="full_name" placeholder="leon" autocomplete="name">
+
+        <label for="email">Email Address</label>
+        <input id="email" type="email" name="email" placeholder="leonxy@gmail.com" autocomplete="email">
+
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="xxxxxxxx" autocomplete="new-password">
+        <p class="field-hint">Minimum 6 characters</p>
+
+        <button type="submit" class="signin-button">
+          <span>Create Account</span>
+          <span class="button-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <p class="signup-note">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+    </section>
+
+    <section class="signup-hero flex-1 max-w-xl lg:pl-8" aria-label="P2PTrade benefits">
+      <div class="signup-icon" aria-hidden="true">🛡</div>
+      <h1 class="signup-title">Join P2PTRADE</h1>
+      <p class="signup-copy">
+        Get started with a welcome bonus and access to
+        peer-to-peer currency trading.
+      </p>
+
+      <div class="bonus-card">
+        <div class="bonus-label">Welcome bonus</div>
+        <div class="bonus-value">$10,000 USD</div>
+        <div class="bonus-note">Starting balance for new accounts</div>
+      </div>
+
+      <ul class="feature-list signup-features" aria-label="Benefits">
+        <li>Multi-currency wallet support</li>
+        <li>Real-time exchange rates</li>
+        <li>Secure transaction history</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
+
