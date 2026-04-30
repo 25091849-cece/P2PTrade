@@ -1,0 +1,46 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2PTrade | Sign In</title>
+  <!-- Tailwind Play CDN (quick dev) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- project overrides / colors kept in login.css -->
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <main class="min-h-screen flex flex-col lg:flex-row items-center lg:items-center justify-center px-8 lg:px-14 py-12 lg:py-20 gap-8 lg:gap-12">
+    <section class="hero-panel flex-1 max-w-xl lg:pr-8" aria-label="P2PTrade overview">
+      <div class="brand-icon" aria-hidden="true">↗</div>
+      <h1 class="brand-name"><span>P2P</span>TRADE</h1>
+      <p class="hero-copy">
+        Peer-to-peer currency exchange platform with
+        direct trading and secure transactions.
+      </p>
+      <ul class="feature-list" aria-label="Platform highlights">
+        <li>Instant currency conversion</li>
+        <li>Secure wallet management</li>
+        <li>Live market rates</li>
+      </ul>
+    </section>
+    <section class="auth-panel w-full max-w-[360px] mt-8 lg:mt-0 lg:-ml-6" aria-label="Sign in form">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to access your trading account</p>
+      <form class="auth-form" action="#" method="post">
+        {% csrf_token %}
+        <label for="email">Email Address</label>
+        <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password">
+        <button type="submit" class="signin-button">
+          <span>Sign In</span>
+          <span class="button-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+      <p class="signup-note">Don't have an account? <a href="{% url 'signup' %}">Create one</a></p>
+    </section>
+  </main>
+</body>
+</html>

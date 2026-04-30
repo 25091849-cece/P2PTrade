@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-  <main class="min-h-screen flex flex-col lg:flex-row items-center justify-center px-8 lg:px-14 py-12 lg:py-20 gap-8 lg:gap-12">
-    <section class="auth-panel w-full max-w-[360px] mt-8 lg:mt-0" aria-label="Create account form">
+  <main class="min-h-screen w-full max-w-[1540px] mx-auto flex flex-col lg:flex-row items-center lg:items-center justify-between px-8 lg:px-14 py-12 lg:py-20 gap-10 lg:gap-16">
+    <section class="auth-panel signup-auth-panel w-full max-w-[448px] mt-8 lg:mt-0" aria-label="Create account form">
       <h2>Create Account</h2>
       <p class="subtitle">Start trading currencies globally</p>
 
-      <form class="auth-form" action="#" method="post">
+      <form class="auth-form" action="{% url 'signup' %}" method="post">
         {% csrf_token %}
         <label for="full_name">Full Name</label>
         <input id="full_name" type="text" name="full_name" placeholder="leon" autocomplete="name">
@@ -35,7 +35,7 @@
       <p class="signup-note">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
     </section>
 
-    <section class="signup-hero flex-1 max-w-xl lg:pl-8" aria-label="P2PTrade benefits">
+    <section class="signup-hero flex-1 w-full max-w-[560px] lg:pl-10" aria-label="P2PTrade benefits">
       <div class="signup-icon" aria-hidden="true">🛡</div>
       <h1 class="signup-title">Join P2PTRADE</h1>
       <p class="signup-copy">
