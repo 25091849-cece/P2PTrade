@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from urllib.parse import quote_plus
 from .models import UserProfile
 
 
@@ -17,7 +19,8 @@ def login_page(request):
             return redirect(reverse('dashboard'))
         return render(request, 'login.html', {'error': 'Invalid credentials', 'email': email})
 
-    return render(request, 'login.html')
+    prefill_email = request.GET.get('email', '').strip()
+    return render(request, 'login.html', {'email': prefill_email})
 
 
 def signup_page(request):
@@ -35,8 +38,9 @@ def signup_page(request):
             error = 'Please enter your email address.'
         elif not password or len(password) < 6:
             error = 'Password must be at least 6 characters.'
-        elif User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
-            error = 'An account with that email already exists.'
+        elif User.objects.filter(username__iexact=email).exists() or User.objects.filter(email__iexact=email).exists():
+            messages.info(request, 'This email is already registered. Please login.')
+            return redirect(f"{reverse('login')}?email={quote_plus(email)}")
 
         if error:
             # Re-render form with error and previously entered values

@@ -30,6 +30,11 @@
       <p class="subtitle">Sign in to access your trading account</p>
       <form class="auth-form" action="{% url 'login' %}" method="post">
         {% csrf_token %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="form-error" style="color:#2563eb;margin-bottom:8px;border:1px solid #2563eb33;padding:10px;border-radius:6px">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
         {% if error %}
           <div class="form-error" style="color:#b91c1c;margin-bottom:8px">{{ error }}</div>
         {% endif %}
