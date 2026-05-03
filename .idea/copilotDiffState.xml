@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/P2PTrade/views.py">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/P2PTrade/views.py" />
+              <option name="originalContent" value="from django.shortcuts import render&#10;&#10;&#10;def login_page(request):&#10;    return render(request, 'login.html')&#10;&#10;def signup_page(request):&#10;    return render(request, 'signup.html')&#10;" />
+              <option name="updatedContent" value="from django.shortcuts import render&#10;&#10;&#10;def login_page(request):&#10;    return render(request, 'login.html')&#10;&#10;&#10;def signup_page(request):&#10;    # If the form was submitted, render the success page with the provided name&#10;    if request.method == 'POST':&#10;        full_name = request.POST.get('full_name', '').strip()&#10;        return render(request, 'signup_success.html', {'name': full_name})&#10;&#10;    # For GET requests, show the signup form&#10;    return render(request, 'signup.html')&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
