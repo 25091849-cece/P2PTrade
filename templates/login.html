@@ -28,10 +28,13 @@
     <section class="auth-panel w-full max-w-[360px] mt-8 lg:mt-0 lg:-ml-6" aria-label="Sign in form">
       <h2>Welcome Back</h2>
       <p class="subtitle">Sign in to access your trading account</p>
-      <form class="auth-form" action="#" method="post">
+      <form class="auth-form" action="{% url 'login' %}" method="post">
         {% csrf_token %}
+        {% if error %}
+          <div class="form-error" style="color:#b91c1c;margin-bottom:8px">{{ error }}</div>
+        {% endif %}
         <label for="email">Email Address</label>
-        <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email">
+        <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email" value="{{ email|default:'' }}">
         <label for="password">Password</label>
         <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password">
         <button type="submit" class="signin-button">

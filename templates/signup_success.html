@@ -13,24 +13,24 @@
     <section class="success-panel">
       <div class="success-icon" aria-hidden="true">✓</div>
       <h1 class="success-title">Account Created!</h1>
-      <p class="success-lead">Welcome to P2PTRADE, {{ name|title }}!</p>
+      <p class="success-lead">Welcome to P2PTRADE, {{ user.get_full_name|default:user.username|title }}!</p>
       <p class="success-copy">Your account has been successfully created with a starting balance.</p>
 
       <div class="success-balance-card">
         <p class="success-balance-label">Starting Balance</p>
         <div class="success-balance-grid">
           <div>
-            <div class="success-balance-value">RM45,000</div>
+            <div class="success-balance-value">{{ user.profile.balance_myr }}</div>
             <div class="success-balance-currency">MYR</div>
           </div>
           <div>
-            <div class="success-balance-value">$10,000</div>
+            <div class="success-balance-value">{{ user.profile.balance_usd }}</div>
             <div class="success-balance-currency">USD</div>
           </div>
         </div>
       </div>
 
-      <a class="signin-button success-button" href="{% url 'login' %}">
+      <a class="signin-button success-button" href="{% url 'dashboard' %}">
         <span>Continue to Dashboard</span>
         <span class="button-arrow" aria-hidden="true">→</span>
       </a>

@@ -16,11 +16,14 @@
 
       <form class="auth-form" action="{% url 'signup' %}" method="post">
         {% csrf_token %}
+        {% if error %}
+          <div class="form-error" style="color:#b91c1c;margin-bottom:8px">{{ error }}</div>
+        {% endif %}
         <label for="full_name">Full Name</label>
-        <input id="full_name" type="text" name="full_name" placeholder="leon" autocomplete="name">
+        <input id="full_name" type="text" name="full_name" placeholder="leon" autocomplete="name" value="{{ full_name|default:'' }}">
 
         <label for="email">Email Address</label>
-        <input id="email" type="email" name="email" placeholder="leonxy@gmail.com" autocomplete="email">
+        <input id="email" type="email" name="email" placeholder="leonxy@gmail.com" autocomplete="email" value="{{ email|default:'' }}">
 
         <label for="password">Password</label>
         <input id="password" type="password" name="password" placeholder="xxxxxxxx" autocomplete="new-password">
