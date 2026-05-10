@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/copilotDiffState.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/COMPLETION_REPORT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2PTrade/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2PTrade/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notifications/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/notifications/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/signup_success.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/signup_success.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +80,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.python manage.py migrate">
+  <component name="RunManager" selected="Python.python manage.py runserver">
     <configuration name="python manage.py migrate" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="P2PTrade" />
       <option name="ENV_FILES" value="" />
@@ -177,8 +181,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py runserver" />
+        <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py showmigrations" />
       </list>
     </recent_temporary>
@@ -203,7 +207,7 @@
       <workItem from="1777802589741" duration="6044000" />
       <workItem from="1777892671400" duration="46000" />
       <workItem from="1778149320923" duration="2639000" />
-      <workItem from="1778386207197" duration="2598000" />
+      <workItem from="1778386207197" duration="4532000" />
     </task>
     <servers />
   </component>
@@ -213,7 +217,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_migrate.coverage" NAME="python manage.py migrate Coverage Results" MODIFIED="1778388827740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_showmigrations.coverage" NAME="python manage.py showmigrations Coverage Results" MODIFIED="1778387648809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778388501597" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778390669795" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
