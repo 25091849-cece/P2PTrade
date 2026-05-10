@@ -1,15 +1,11 @@
 from django.contrib import admin
-from .models import UserProfile
 
+# Admin registration has been moved to individual apps:
+# - User: accounts.admin
+# - Wallet/WalletBalance: wallets.admin
+# - Deal/Transaction: marketplace.admin
+# - Dispute models: disputes.admin
+# - Notification: notifications.admin
+# - Currency/ExchangeRate/ActivityRecord: core.admin
 
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'balance_myr', 'balance_usd', 'total_balance_usd', 'created_at')
-    readonly_fields = ('created_at', 'updated_at')
-    fieldsets = (
-        ('User', {'fields': ('user',)}),
-        ('Balances', {'fields': ('balance_myr', 'balance_usd', 'total_balance_usd')}),
-        ('Trading Info', {'fields': ('active_trades', 'monthly_profit_usd')}),
-        ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
-    )
-
+# This file is kept for backward compatibility.

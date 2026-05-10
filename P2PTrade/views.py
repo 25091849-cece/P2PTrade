@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from urllib.parse import quote_plus
-from .models import UserProfile
+from accounts.models import User
+from wallets.models import Wallet
 
 
 def login_page(request):
@@ -55,15 +55,20 @@ def signup_page(request):
         first_name = parts[0] if parts else ''
         last_name = ' '.join(parts[1:]) if len(parts) > 1 else ''
 
-        user = User.objects.create_user(username=email, email=email, password=password,
-                                        first_name=first_name, last_name=last_name)
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            name=full_name
+        )
 
         # Log the user in
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
-            # Create UserProfile with starting balances
-            UserProfile.objects.create(user=user)
+            # Wallet is created automatically via signals
             return redirect(reverse('signup_success'))
 
         # Fallback (shouldn't normally happen)
@@ -81,11 +86,14 @@ def signup_success(request):
 
 @login_required(login_url='login')
 def dashboard_page(request):
-    # Get the user's profile
-    profile = UserProfile.objects.get(user=request.user)
+    # Get the user's wallet
+    try:
+        wallet = request.user.wallet
+    except Wallet.DoesNotExist:
+        wallet = None
 
     context = {
-        'profile': profile,
+        'wallet': wallet,
     }
     return render(request, 'dashboard.html', context)
 
