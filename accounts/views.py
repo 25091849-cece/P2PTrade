@@ -46,10 +46,10 @@ def login_page(request):
 		if user is not None:
 			login(request, user)
 			return redirect(reverse('dashboard'))
-		return render(request, 'login.html', {'error': 'Invalid credentials', 'email': email})
+		return render(request, 'account/login.html', {'error': 'Invalid credentials', 'email': email})
 
 	prefill_email = request.GET.get('email', '').strip()
-	return render(request, 'login.html', {'email': prefill_email})
+	return render(request, 'account/login.html', {'email': prefill_email})
 
 
 def signup_page(request):
@@ -73,7 +73,7 @@ def signup_page(request):
 
 		if error:
 			# Re-render form with error and previously entered values
-			return render(request, 'signup.html', {
+			return render(request, 'account/signup.html', {
 				'error': error,
 				'full_name': full_name,
 				'email': email,
@@ -101,10 +101,10 @@ def signup_page(request):
 			return redirect(reverse('signup_success'))
 
 		# Fallback (shouldn't normally happen)
-		return render(request, 'signup.html', {'error': 'Unable to log you in after signup.'})
+		return render(request, 'account/signup.html', {'error': 'Unable to log you in after signup.'})
 
 	# GET: show signup form
-	return render(request, 'signup.html')
+	return render(request, 'account/signup.html')
 
 
 @login_required(login_url='login')
@@ -114,7 +114,7 @@ def signup_success(request):
 		'profile': _signup_profile(wallet),
 		'wallet': wallet,
 	}
-	return render(request, 'signup_success.html', context)
+	return render(request, 'account/signup_success.html', context)
 
 
 @login_required(login_url='login')

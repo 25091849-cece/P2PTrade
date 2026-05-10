@@ -1,4 +1,10 @@
 from django.shortcuts import render
 
-# Views for marketplace app - implement REST endpoints in API views
+
+def index(request):
+	"""Placeholder index view for the marketplace app.
+
+	Replace with real UI when the marketplace module is implemented.
+	"""
+	return render(request, 'marketplace/index.html')
 

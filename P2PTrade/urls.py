@@ -19,5 +19,12 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('accounts.urls')),
+    # Register app routes (namespace) so templates can reverse names like
+    # 'wallets:index' without raising NoReverseMatch. Add marketplace and
+    # transactions stubs so the dashboard links resolve while teams implement
+    # the real modules.
+    path('wallets/', include(('wallets.urls', 'wallets'), namespace='wallets')),
+    path('marketplace/', include(('marketplace.urls', 'marketplace'), namespace='marketplace')),
+    path('transactions/', include(('transactions.urls', 'transactions'), namespace='transactions')),
     path('admin/', admin.site.urls),
 ]
