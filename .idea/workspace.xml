@@ -5,57 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QUICK_REFERENCE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/exceptions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/management/commands/populate_currencies.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/disputes/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/services.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notifications/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setup_admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/signals.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilotDiffState.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notifications/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/notifications/admin.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,6 +56,7 @@
   "keyToString": {
     "Django Server.P2PTrade.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.python manage.py migrate.executor": "Run",
     "Python.python manage.py runserver.executor": "Run",
     "Python.python manage.py showmigrations.executor": "Run",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
@@ -121,7 +76,31 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.python manage.py runserver">
+  <component name="RunManager" selected="Python.python manage.py migrate">
+    <configuration name="python manage.py migrate" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="P2PTrade" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="manage.py" />
+      <option name="PARAMETERS" value="migrate" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="python manage.py runserver" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="P2PTrade" />
       <option name="ENV_FILES" value="" />
@@ -198,6 +177,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py runserver" />
         <item itemvalue="Python.python manage.py showmigrations" />
       </list>
@@ -223,7 +203,7 @@
       <workItem from="1777802589741" duration="6044000" />
       <workItem from="1777892671400" duration="46000" />
       <workItem from="1778149320923" duration="2639000" />
-      <workItem from="1778386207197" duration="1559000" />
+      <workItem from="1778386207197" duration="2598000" />
     </task>
     <servers />
   </component>
@@ -231,8 +211,9 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_migrate.coverage" NAME="python manage.py migrate Coverage Results" MODIFIED="1778388827740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_showmigrations.coverage" NAME="python manage.py showmigrations Coverage Results" MODIFIED="1778387648809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778387782748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778388501597" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

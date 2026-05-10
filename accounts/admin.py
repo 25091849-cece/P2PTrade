@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import User
 
 
@@ -40,8 +40,8 @@ class UserAdmin(BaseUserAdmin):
     def account_status(self, obj):
         """Display account lock status."""
         if obj.is_account_locked():
-            return format_html('<span style="color: red;">🔒 Locked</span>')
-        return format_html('<span style="color: green;">✓ Active</span>')
+            return mark_safe('<span style="color: red;">LOCKED</span>')
+        return mark_safe('<span style="color: green;">ACTIVE</span>')
 
     account_status.short_description = 'Status'
 

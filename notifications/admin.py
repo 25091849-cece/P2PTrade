@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import Notification
 
 
@@ -30,8 +30,8 @@ class NotificationAdmin(admin.ModelAdmin):
 
     def read_status(self, obj):
         if obj.is_read:
-            return format_html('<span style="color: gray;">✓ Read</span>')
-        return format_html('<span style="color: blue;">● Unread</span>')
+            return mark_safe('<span style="color: gray;">Read</span>')
+        return mark_safe('<span style="color: blue;">Unread</span>')
 
     read_status.short_description = 'Status'
 
