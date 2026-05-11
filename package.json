@@ -1,0 +1,10 @@
+{
+  "name": "p2ptrade",
+  "scripts": {
+    "css:build": "tailwindcss -i ./src/dashboard.css -o ./static/css/dashboard.css",
+    "css:watch": "tailwindcss -i ./src/dashboard.css -o ./static/css/dashboard.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
