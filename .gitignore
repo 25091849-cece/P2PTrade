@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+*$py.class
+*.so
+.Python
+
+# Django
+db.sqlite3
+db.sqlite3
+/staticfiles/
+/media/
+
+# Virtual env
+venv/
+
+# Environment variables
+.env
+
+# Node
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
