@@ -1,0 +1,118 @@
+<!-- Admin Dashboard Section  STILL NOT YET FINISH-->
+<div class="dashboard-header">
+  <h1>Admin Dashboard</h1>
+  <p>Platform overview and management</p>
+</div>
+
+<!-- Admin Stats Grid -->
+<div class="stats-grid">
+  <!-- Total Users Card -->
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon active-trades">👥</div>
+      <div class="stat-change">▲ 5.2%</div>
+    </div>
+    <div class="stat-label">Total Users</div>
+    <div class="stat-value">1,234</div>
+  </div>
+
+  <!-- Active Deals Card -->
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon total-balance">🎯</div>
+      <div class="stat-change">▲ 12.8%</div>
+    </div>
+    <div class="stat-label">Active Deals</div>
+    <div class="stat-value">487</div>
+  </div>
+
+  <!-- Total Transactions Card -->
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon monthly-profit">💳</div>
+      <div class="stat-change">▲ 23.5%</div>
+    </div>
+    <div class="stat-label">Total Transactions</div>
+    <div class="stat-value">$2.4M</div>
+  </div>
+
+  <!-- Disputes Card -->
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon transactions">⚠️</div>
+      <div class="stat-change" style="color: #ff6b6b;">↑ 2.1%</div>
+    </div>
+    <div class="stat-label">Open Disputes</div>
+    <div class="stat-value">23</div>
+  </div>
+</div>
+
+<!-- Admin Content Grid -->
+<div class="dashboard-content">
+  <!-- System Health Section -->
+  <section class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">System Health</h3>
+      <span class="section-icon">⚙️</span>
+    </div>
+
+    <div style="space-y: 4;">
+      <div style="padding: 12px 0; border-bottom: 1px solid #1a2535; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #9aa6b2;">Platform Uptime</span>
+        <span style="color: #2dd4bf; font-weight: bold;">99.9%</span>
+      </div>
+      <div style="padding: 12px 0; border-bottom: 1px solid #1a2535; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #9aa6b2;">API Response Time</span>
+        <span style="color: #2dd4bf; font-weight: bold;">145ms</span>
+      </div>
+      <div style="padding: 12px 0; border-bottom: 1px solid #1a2535; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #9aa6b2;">Database Status</span>
+        <span style="color: #2dd4bf; font-weight: bold;">Healthy</span>
+      </div>
+      <div style="padding: 12px 0; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #9aa6b2;">Active Sessions</span>
+        <span style="color: #2dd4bf; font-weight: bold;">2,847</span>
+      </div>
+    </div>
+
+    <a href="{% url_or_placeholder 'admin:index' %}" class="view-marketplace-btn" style="margin-top: 16px;">Go to Admin Panel →</a>
+  </section>
+
+  <!-- Recent Reports Section -->
+  <section class="content-section recent-activity-section">
+    <div class="section-header">
+      <h3 class="section-title">Recent Reports</h3>
+      <span class="section-icon">📊</span>
+    </div>
+
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="activity-type">DISPUTE</div>
+        <div class="activity-details">
+          <div class="activity-description">Trade dispute resolution</div>
+          <div class="activity-time">2 hours ago</div>
+        </div>
+        <div class="activity-amount" style="color: #ff6b6b;">●</div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-type">REPORT</div>
+        <div class="activity-details">
+          <div class="activity-description">Suspicious account activity</div>
+          <div class="activity-time">4 hours ago</div>
+        </div>
+        <div class="activity-amount" style="color: #ffa500;">●</div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-type">UPDATE</div>
+        <div class="activity-details">
+          <div class="activity-description">Exchange rates synchronized</div>
+          <div class="activity-time">1 day ago</div>
+        </div>
+        <div class="activity-amount" style="color: #2dd4bf;">●</div>
+      </div>
+    </div>
+
+    <a href="{% url_or_placeholder 'admin:index' %}" class="view-all-transactions-btn">View All Reports →</a>
+  </section>
+</div>
+
