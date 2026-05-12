@@ -50,32 +50,149 @@
 
     <main class="main-content">
       {% block dashboard_main %}
-      <h1 class="text-3xl mb-2">Welcome back, {{ user.get_full_name|default:user.username }}</h1>
-      <p class="text-[#9aa6b2] mb-5">Here's what's happening with your account today</p>
+      <div class="dashboard-header">
+        <h1 class="text-3xl font-bold mb-2">Welcome back, {{ user.get_full_name|default:user.username }}</h1>
+        <p class="text-[#9aa6b2]">Here's what's happening with your account today</p>
+      </div>
 
       <div class="stats-grid">
-        <div class="card">
-          <div class="text-xs text-[#9aa6b2]">Total Balance</div>
-          <div class="text-xl font-bold">${{ profile.total_balance_usd }}</div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon total-balance">📁</div>
+            <div class="stat-change">▲ 12.5%</div>
+          </div>
+          <div class="stat-label">Total Balance</div>
+          <div class="stat-value">${{ profile.total_balance_usd|floatformat:2 }}</div>
         </div>
-        <div class="card">
-          <div class="text-xs text-[#9aa6b2]">Active Trades</div>
-          <div class="text-xl font-bold">{{ profile.active_trades }}</div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon active-trades">📊</div>
+            <div class="stat-change">▲ 8.2%</div>
+          </div>
+          <div class="stat-label">Active Trades</div>
+          <div class="stat-value">{{ profile.active_trades }}</div>
         </div>
-        <div class="card">
-          <div class="text-xs text-[#9aa6b2]">Monthly Profit</div>
-          <div class="text-xl font-bold">${{ profile.monthly_profit_usd }}</div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon monthly-profit">📈</div>
+            <div class="stat-change">▲ 15.3%</div>
+          </div>
+          <div class="stat-label">Monthly Profit</div>
+          <div class="stat-value">${{ profile.monthly_profit_usd|floatformat:2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon transactions">⏱️</div>
+            <div style="text-align: right; font-size: 12px; color: #9aa6b2;">This month</div>
+          </div>
+          <div class="stat-label">Transactions</div>
+          <div class="stat-value">156</div>
         </div>
       </div>
 
-      <section class="card">
-        <h3 class="mb-3">Live Exchange Rates</h3>
-        <ul class="list-none p-0 m-0 text-[#9aa6b2]">
-          <li>USD → EUR — 0.92</li>
-          <li>USD → GBP — 0.79</li>
-          <li>USD → JPY — 149.85</li>
-        </ul>
-      </section>
+      <div class="dashboard-content">
+        <section class="content-section">
+          <div class="section-header">
+            <h3 class="section-title">Live Exchange Rates</h3>
+            <span class="section-icon">↩️</span>
+          </div>
+
+          <div class="exchange-rates-list">
+            {% if exchange_rates %}
+              {% for rate in exchange_rates %}
+                <div class="exchange-rate-item">
+                  <div class="rate-pair">{{ rate.from_currency.code }} → {{ rate.to_currency.code }}</div>
+                  <div class="rate-value">{{ rate.rate }}</div>
+                  <div class="rate-change {% if rate.change_percent >= 0 %}text-green{% else %}text-red{% endif %}">
+                    {% if rate.change_percent >= 0 %}▲{% else %}▼{% endif %} {{ rate.change_percent|floatformat:2 }}%
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="exchange-rate-item">
+                <div class="rate-pair">USD → EUR</div>
+                <div class="rate-value">0.92</div>
+                <div class="rate-change text-green">▲ 1.2%</div>
+              </div>
+              <div class="exchange-rate-item">
+                <div class="rate-pair">USD → GBP</div>
+                <div class="rate-value">0.79</div>
+                <div class="rate-change text-red">▼ 0.5%</div>
+              </div>
+              <div class="exchange-rate-item">
+                <div class="rate-pair">USD → JPY</div>
+                <div class="rate-value">149.85</div>
+                <div class="rate-change text-green">▲ 0.6%</div>
+              </div>
+              <div class="exchange-rate-item">
+                <div class="rate-pair">EUR → GBP</div>
+                <div class="rate-value">0.86</div>
+                <div class="rate-change text-red">▼ 0.3%</div>
+              </div>
+              <div class="exchange-rate-item">
+                <div class="rate-pair">BTC → USD</div>
+                <div class="rate-value">68,428.50</div>
+                <div class="rate-change text-green">▲ 3.4%</div>
+              </div>
+            {% endif %}
+          </div>
+
+          <a href="{% url_or_placeholder 'marketplace:index' %}" class="view-marketplace-btn">View Marketplace ↗</a>
+        </section>
+
+        <section class="content-section recent-activity-section">
+          <h3 class="section-title mb-4">Recent Activity</h3>
+
+          <div class="activity-list">
+            {% if recent_activity %}
+              {% for activity in recent_activity %}
+                <div class="activity-item">
+                  <div class="activity-type">{{ activity.type }}</div>
+                  <div class="activity-details">
+                    <div class="activity-description">{{ activity.description }}</div>
+                    <div class="activity-time">
+                      {% if activity.timestamp %}
+                        {{ activity.timestamp|timesince }} ago
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="activity-amount">{{ activity.amount }}</div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="activity-item">
+                <div class="activity-type">EXCHANGE</div>
+                <div class="activity-details">
+                  <div class="activity-description">USD → EUR</div>
+                  <div class="activity-time">2 hours ago</div>
+                </div>
+                <div class="activity-amount">1200</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-type">DEPOSIT</div>
+                <div class="activity-details">
+                  <div class="activity-description">Deposit USD</div>
+                  <div class="activity-time">1 day ago</div>
+                </div>
+                <div class="activity-amount">5,000</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-type">EXCHANGE</div>
+                <div class="activity-details">
+                  <div class="activity-description">EUR → GBP</div>
+                  <div class="activity-time">2 days ago</div>
+                </div>
+                <div class="activity-amount">500</div>
+              </div>
+            {% endif %}
+          </div>
+
+          <a href="{% url_or_placeholder 'transactions:index' %}" class="view-all-transactions-btn">View All Transactions</a>
+        </section>
+      </div>
       {% endblock %}
     </main>
   </div>
