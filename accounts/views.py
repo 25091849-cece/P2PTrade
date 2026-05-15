@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum
 
 from accounts.models import User
 from wallets.models import Wallet
@@ -55,6 +55,16 @@ def _signup_profile(wallet=None):
 		balance_myr='RM45,000',
 		balance_usd='$10,000',
 		wallet=wallet,
+	)
+
+
+def _is_admin_user(user):
+	return bool(
+		user and (
+			getattr(user, 'is_superuser', False)
+			or getattr(user, 'is_staff', False)
+			or getattr(user, 'is_admin', lambda: False)()
+		)
 	)
 
 
@@ -141,6 +151,7 @@ def signup_success(request):
 @login_required(login_url='login')
 def dashboard_page(request):
 	wallet = _wallet_or_none(request.user)
+	is_admin_user = _is_admin_user(request.user)
 
 	# Fetch exchange rates (USD-based rates)
 	try:
@@ -176,8 +187,10 @@ def dashboard_page(request):
 		'profile': _dashboard_profile(request.user, wallet),
 		'exchange_rates': exchange_rates,
 		'recent_activity': recent_activity,
+		'is_admin_user': is_admin_user,
 	}
-	return render(request, 'dashboard.html', context)
+	template_name = 'admin_dashboard.html' if is_admin_user else 'dashboard.html'
+	return render(request, template_name, context)
 
 
 def logout_view(request):
