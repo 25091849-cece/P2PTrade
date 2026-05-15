@@ -280,12 +280,157 @@
     @apply bg-amber-400 text-[#0b1220];
   }
 
+  .admin-sidebar-nav .admin-nav-link {
+    @apply flex items-center gap-3 py-3 px-4 rounded-xl text-slate-200;
+  }
+
+  .admin-sidebar-nav .admin-nav-link:hover {
+    @apply bg-[#1a2535] text-white;
+  }
+
+  .admin-sidebar-nav .admin-nav-link.active {
+    @apply bg-[#ffb347] text-[#0b1220];
+  }
+
+  .nav-icon {
+    @apply flex h-5 w-5 items-center justify-center text-sm flex-shrink-0;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 2rem;
+  }
+
+  .admin-content-grid {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: stretch;
+  }
+
+  .admin-panel-card {
+    min-height: 34rem;
+  }
+
+  .admin-health-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .health-list {
+    @apply flex flex-col gap-3 flex-1;
+  }
+
+  .health-item {
+    @apply flex items-center justify-between rounded-lg bg-[#141b2b] px-4 py-3 border border-[#1a2535];
+  }
+
+  .health-label {
+    @apply text-[#9aa6b2] text-sm;
+  }
+
+  .health-value {
+    @apply font-bold text-white text-base;
+  }
+
+  .health-value-good {
+    @apply text-[#2dd4bf];
+  }
+
+  .health-value-warning {
+    @apply text-[#ffb347];
+  }
+
+  .admin-panel-btn {
+    @apply mt-4;
+  }
+
+  .admin-recent-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-recent-list {
+    @apply flex flex-col gap-3 flex-1;
+  }
+
+  .admin-recent-item {
+    @apply flex items-start gap-3 rounded-lg bg-[#141b2b] border border-[#1a2535] px-4 py-3;
+  }
+
+  .admin-recent-icon {
+    @apply flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0 font-bold;
+  }
+
+  .admin-icon-blue {
+    @apply bg-[#1e3a52] text-[#5eb3ff];
+  }
+
+  .admin-icon-warning {
+    @apply bg-[#2a1f00] text-[#ffb347];
+  }
+
+  .admin-recent-body {
+    @apply min-w-0 flex-1;
+  }
+
+  .admin-recent-title {
+    @apply text-sm font-semibold text-white uppercase tracking-wide;
+  }
+
+  .admin-recent-meta {
+    @apply text-xs text-[#9aa6b2] mt-1;
+  }
+
+  .admin-recent-time {
+    @apply text-[11px] text-[#9aa6b2] whitespace-nowrap pt-1;
+  }
+
+  .admin-recent-status {
+    @apply rounded-full px-3 py-1 text-xs font-semibold capitalize whitespace-nowrap;
+  }
+
+  .admin-status-pending {
+    @apply bg-[#2a1f00] text-[#ffb347];
+  }
+
+  .admin-status-review {
+    @apply bg-[#1e3a52] text-[#5eb3ff];
+  }
+
+  .admin-section-title {
+    @apply text-2xl;
+  }
+
+  .trend-up {
+    @apply text-[#2dd4bf] text-sm;
+  }
+
+  .stat-change-warning {
+    @apply text-[#9aa6b2] font-medium;
+  }
+
   .user-profile {
-    @apply absolute bottom-6 left-6 text-slate-300;
+    @apply absolute bottom-6 left-6 right-6 pt-5 border-t border-[#1a2535] text-slate-300;
   }
 
   .user-avatar {
     @apply w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-white font-bold;
+  }
+
+  .sidebar {
+    @apply border-r border-[#182233];
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 179, 71, 0.04) 0%, rgba(255, 179, 71, 0) 18%);
+    pointer-events: none;
+  }
+
+  .sidebar > * {
+    position: relative;
+    z-index: 1;
   }
 
   @media (max-width: 1280px) {
@@ -294,6 +439,10 @@
     }
 
     .dashboard-content {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-content-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -310,6 +459,10 @@
 
     .recent-activity-section {
       grid-column: 1;
+    }
+
+    .admin-panel-card {
+      min-height: auto;
     }
   }
 

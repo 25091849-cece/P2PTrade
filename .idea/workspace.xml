@@ -5,11 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/disputes/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin/management/manage_user.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin/transactions/admin_transaction.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/disputes/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2PTrade/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup_admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup_admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/disputes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/disputes/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/dashboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/tailwind.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/tailwind.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/account/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/account/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/account/signup_success.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/signup_success.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/admin_dashboard_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard_section.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/transactions/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/transactions/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactions/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/transactions/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/transactions/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,31 +73,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Django Server.P2PTrade.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.python manage.py migrate.executor&quot;: &quot;Run&quot;,
-    &quot;Python.python manage.py runserver.executor&quot;: &quot;Run&quot;,
-    &quot;Python.python manage.py showmigrations.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR_AND_PREVIEW&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/cecelia&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Django Server.P2PTrade.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.python manage.py migrate.executor": "Run",
+    "Python.python manage.py runserver.executor": "Run",
+    "Python.python manage.py showmigrations.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "django.template.preview.state": "SHOW_EDITOR",
+    "git-widget-placeholder": "feature/cecelia",
+    "last_opened_file_path": "C:/Users/Asus/Documents/GitHub/P2PTrade/templates/admin/management",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.css:build.executor": "Run",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Django Server.P2PTrade">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Asus\Documents\GitHub\P2PTrade\templates\admin\management" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.css:build">
     <configuration name="python manage.py migrate" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="P2PTrade" />
       <option name="ENV_FILES" value="" />
@@ -181,8 +203,19 @@
       <option name="customRunCommand" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="css:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="css:build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.css:build" />
         <item itemvalue="Python.python manage.py runserver" />
         <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py showmigrations" />

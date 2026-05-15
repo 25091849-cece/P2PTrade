@@ -76,7 +76,7 @@ def login_page(request):
 		user = authenticate(request, username=email, password=password)
 		if user is not None:
 			login(request, user)
-			return redirect(reverse('dashboard'))
+			return redirect(reverse('accounts:dashboard'))
 		return render(request, 'account/login.html', {'error': 'Invalid credentials', 'email': email})
 
 	prefill_email = request.GET.get('email', '').strip()
@@ -100,7 +100,7 @@ def signup_page(request):
 			error = 'Password must be at least 6 characters.'
 		elif User.objects.filter(username__iexact=email).exists() or User.objects.filter(email__iexact=email).exists():
 			messages.info(request, 'This email is already registered. Please login.')
-			return redirect(f"{reverse('login')}?email={quote_plus(email)}")
+			return redirect(f"{reverse('accounts:login')}?email={quote_plus(email)}")
 
 		if error:
 			# Re-render form with error and previously entered values
@@ -129,7 +129,7 @@ def signup_page(request):
 		if user is not None:
 			login(request, user)
 			# Wallet is created automatically via signals
-			return redirect(reverse('signup_success'))
+			return redirect(reverse('accounts:signup_success'))
 
 		# Fallback (shouldn't normally happen)
 		return render(request, 'account/signup.html', {'error': 'Unable to log you in after signup.'})
@@ -195,5 +195,12 @@ def dashboard_page(request):
 
 def logout_view(request):
 	logout(request)
-	return redirect(reverse('login'))
+	return redirect(reverse('accounts:login'))
+
+@login_required(login_url='login')
+def manage_user(request):
+	"""Admin-only user management page."""
+	if not _is_admin_user(request.user):
+		return redirect(reverse('accounts:dashboard'))
+	return render(request, 'admin/management/manage_user.html')
 

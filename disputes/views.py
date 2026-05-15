@@ -1,4 +1,11 @@
 from django.shortcuts import render
 
-# Views for disputes app - implement REST endpoints in API views
+
+def index(request):
+	"""Placeholder index view for disputes.
+
+	This keeps the `disputes:index` namespace available while teammates
+	develop the actual dispute management UI.
+	"""
+	return render(request, 'disputes/index.html')
 
