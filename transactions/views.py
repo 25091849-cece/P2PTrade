@@ -1,20 +1,26 @@
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render
 
+from marketplace.models import Transaction
 
+
+@login_required
 def index(request):
-    """Placeholder index view for transactions.
-
-    This app is a lightweight stub so templates can reverse the
-    `transactions:index` namespace while teams implement the real module.
-    """
-    return render(request, 'transactions/index.html')
+    user = request.user
+    transactions = (
+        Transaction.objects
+        .filter(Q(buyer=user) | Q(seller=user) | Q(user=user))
+        .select_related('from_currency', 'to_currency', 'buyer', 'seller')
+        .order_by('-created_at')
+    )
+    return render(request, 'transactions/index.html', {'transactions': transactions})
 
 
 def admin_index(request):
-    """Admin-specific transactions view.
-
-    Shows all transactions on the platform for administrative oversight.
-    """
-    return render(request, 'admin/transactions/admin_transaction.html')
+    transactions = Transaction.objects.select_related(
+        'buyer', 'seller', 'user', 'from_currency', 'to_currency'
+    ).order_by('-created_at')
+    return render(request, 'admin/transactions/admin_transaction.html', {'transactions': transactions})
 
 
