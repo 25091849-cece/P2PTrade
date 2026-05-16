@@ -2,10 +2,9 @@ from django.urls import path
 
 from . import views
 
-app_name = 'transactions'
+app_name = 'disputes'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('admin/', views.admin_index, name='admin_index'),
 ]
 

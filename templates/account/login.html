@@ -28,7 +28,7 @@
     <section class="auth-panel w-full max-w-[360px] mt-8 lg:mt-0 lg:-ml-6" aria-label="Sign in form">
       <h2>Welcome Back</h2>
       <p class="subtitle">Sign in to access your trading account</p>
-      <form class="auth-form" action="{% url 'login' %}" method="post">
+      <form class="auth-form" action="{% url 'accounts:login' %}" method="post">
         {% csrf_token %}
         {% if messages %}
           {% for message in messages %}
@@ -47,7 +47,7 @@
           <span class="button-arrow" aria-hidden="true">→</span>
         </button>
       </form>
-      <p class="signup-note">Don't have an account? <a href="{% url 'signup' %}">Create one</a></p>
+      <p class="signup-note">Don't have an account? <a href="{% url 'accounts:signup' %}">Create one</a></p>
     </section>
   </main>
 </body>

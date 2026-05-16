@@ -26,5 +26,6 @@ urlpatterns = [
     path('wallets/', include(('wallets.urls', 'wallets'), namespace='wallets')),
     path('marketplace/', include(('marketplace.urls', 'marketplace'), namespace='marketplace')),
     path('transactions/', include(('transactions.urls', 'transactions'), namespace='transactions')),
+    path('disputes/', include(('disputes.urls', 'disputes'), namespace='disputes')),
     path('admin/', admin.site.urls),
 ]

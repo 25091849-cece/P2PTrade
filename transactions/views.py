@@ -9,3 +9,12 @@ def index(request):
     """
     return render(request, 'transactions/index.html')
 
+
+def admin_index(request):
+    """Admin-specific transactions view.
+
+    Shows all transactions on the platform for administrative oversight.
+    """
+    return render(request, 'admin/transactions/admin_transaction.html')
+
+

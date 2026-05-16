@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum
 
 from accounts.models import User
 from wallets.models import Wallet
@@ -58,6 +58,16 @@ def _signup_profile(wallet=None):
 	)
 
 
+def _is_admin_user(user):
+	return bool(
+		user and (
+			getattr(user, 'is_superuser', False)
+			or getattr(user, 'is_staff', False)
+			or getattr(user, 'is_admin', lambda: False)()
+		)
+	)
+
+
 def login_page(request):
 	# Simple login handler: POST will attempt to authenticate by email (used as username)
 	if request.method == 'POST':
@@ -66,7 +76,7 @@ def login_page(request):
 		user = authenticate(request, username=email, password=password)
 		if user is not None:
 			login(request, user)
-			return redirect(reverse('dashboard'))
+			return redirect(reverse('accounts:dashboard'))
 		return render(request, 'account/login.html', {'error': 'Invalid credentials', 'email': email})
 
 	prefill_email = request.GET.get('email', '').strip()
@@ -90,7 +100,7 @@ def signup_page(request):
 			error = 'Password must be at least 6 characters.'
 		elif User.objects.filter(username__iexact=email).exists() or User.objects.filter(email__iexact=email).exists():
 			messages.info(request, 'This email is already registered. Please login.')
-			return redirect(f"{reverse('login')}?email={quote_plus(email)}")
+			return redirect(f"{reverse('accounts:login')}?email={quote_plus(email)}")
 
 		if error:
 			# Re-render form with error and previously entered values
@@ -119,7 +129,7 @@ def signup_page(request):
 		if user is not None:
 			login(request, user)
 			# Wallet is created automatically via signals
-			return redirect(reverse('signup_success'))
+			return redirect(reverse('accounts:signup_success'))
 
 		# Fallback (shouldn't normally happen)
 		return render(request, 'account/signup.html', {'error': 'Unable to log you in after signup.'})
@@ -141,6 +151,7 @@ def signup_success(request):
 @login_required(login_url='login')
 def dashboard_page(request):
 	wallet = _wallet_or_none(request.user)
+	is_admin_user = _is_admin_user(request.user)
 
 	# Fetch exchange rates (USD-based rates)
 	try:
@@ -176,11 +187,20 @@ def dashboard_page(request):
 		'profile': _dashboard_profile(request.user, wallet),
 		'exchange_rates': exchange_rates,
 		'recent_activity': recent_activity,
+		'is_admin_user': is_admin_user,
 	}
-	return render(request, 'dashboard.html', context)
+	template_name = 'admin_dashboard.html' if is_admin_user else 'dashboard.html'
+	return render(request, template_name, context)
 
 
 def logout_view(request):
 	logout(request)
-	return redirect(reverse('login'))
+	return redirect(reverse('accounts:login'))
+
+@login_required(login_url='login')
+def manage_user(request):
+	"""Admin-only user management page."""
+	if not _is_admin_user(request.user):
+		return redirect(reverse('accounts:dashboard'))
+	return render(request, 'admin/management/manage_user.html')
 
