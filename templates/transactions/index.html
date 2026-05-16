@@ -1,13 +1,153 @@
 {% extends "dashboard.html" %}
+{% load static %}
 
-{% block dashboard_main %}
-  <div class="dashboard-header">
-    <h1>Transactions</h1>
-    <p>Placeholder template for the transactions module. Add the team UI here.</p>
-  </div>
-
-  <div class="content-section">
-    <p>This page is intentionally minimal so teammates can build the transactions workflow.</p>
-  </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/transactions.css' %}">
 {% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'js/transactions.js' %}"></script>
+{% endblock %}
+
+{% block dashboard_main %}
+<div class="dashboard-header">
+  <h1 class="text-3xl font-bold mb-2">Transaction History</h1>
+  <p class="text-[#9aa6b2]">All your past and recent transactions</p>
+</div>
+
+<div class="content-section" style="width: 100%;">
+  <div class="section-header">
+    <h3 class="section-title">Transactions</h3>
+  </div>
+
+  {% if transactions %}
+  <div class="txn-filter-tabs">
+    <div class="txn-filter-indicator"></div>
+    <button class="txn-filter-tab active" data-filter="all">All</button>
+    <button class="txn-filter-tab" data-filter="completed">Completed</button>
+    <button class="txn-filter-tab" data-filter="pending">Pending</button>
+    <button class="txn-filter-tab" data-filter="failed">Failed</button>
+  </div>
+
+  <div class="txn-table-wrapper">
+    <table class="txn-table">
+      <thead>
+        <tr class="txn-thead-row">
+          <th class="txn-th">ID</th>
+          <th class="txn-th">Type</th>
+          <th class="txn-th">Pair</th>
+          <th class="txn-th">Amount</th>
+          <th class="txn-th">Received</th>
+          <th class="txn-th">Rate</th>
+          <th class="txn-th">Status</th>
+          <th class="txn-th">Offer Creation Time</th>
+        </tr>
+      </thead>
+      <tbody id="txn-tbody">
+        {% for txn in transactions %}
+        <tr class="txn-row" data-status="{{ txn.status }}" data-id="{{ txn.id }}">
+          <td class="txn-td-id">#{{ txn.id }}</td>
+          <td class="txn-td">
+            <span class="activity-type">{{ txn.type }}</span>
+          </td>
+          <td class="txn-td-pair">
+            {{ txn.from_currency.code }} → {{ txn.to_currency.code }}
+          </td>
+          <td class="txn-td-mono">
+            {{ txn.amount|floatformat:2 }} {{ txn.from_currency.code }}
+          </td>
+          <td class="txn-td-mono-muted">
+            {% if txn.received_amount %}
+              {{ txn.received_amount|floatformat:2 }} {{ txn.to_currency.code }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td class="txn-td-mono-muted">{{ txn.rate }}</td>
+          <td class="txn-td">
+            {% if txn.status == 'completed' %}
+              <span class="txn-status-badge txn-status-completed">{{ txn.status }}</span>
+            {% elif txn.status == 'pending' %}
+              <span class="txn-status-badge txn-status-pending">{{ txn.status }}</span>
+            {% elif txn.status == 'failed' %}
+              <span class="txn-status-badge txn-status-failed">{{ txn.status }}</span>
+            {% else %}
+              <span class="txn-status-badge txn-status-default">{{ txn.status }}</span>
+            {% endif %}
+          </td>
+          <td class="txn-td-date">{{ txn.created_at|date:"d M Y, H:i" }}</td>
+        </tr>
+        <tr class="txn-detail-row" id="txn-detail-{{ txn.id }}">
+          <td class="txn-detail-cell" colspan="8">
+            <div class="txn-detail-content">
+              <div class="txn-detail-title">Transaction Details</div>
+              <div class="txn-detail-grid">
+                <div class="txn-detail-item">
+                  <span class="txn-detail-label">Payment Reference</span>
+                  <span class="txn-detail-value">{{ txn.payment_reference|default:"—" }}</span>
+                </div>
+                <div class="txn-detail-item">
+                  <span class="txn-detail-label">Counterparty</span>
+                  {% if txn.type == 'exchange' %}
+                    {% if request.user == txn.buyer %}
+                      {% with cp=txn.seller %}
+                        <div class="txn-detail-sub">
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">User ID</span>
+                            <span class="txn-detail-sub-val">#{{ cp.id }}</span>
+                          </div>
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">Email</span>
+                            <span class="txn-detail-sub-val">{{ cp.email|default:"—" }}</span>
+                          </div>
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">Name</span>
+                            <span class="txn-detail-sub-val">{{ cp.name|default:"—" }}</span>
+                          </div>
+                        </div>
+                      {% endwith %}
+                    {% else %}
+                      {% with cp=txn.buyer %}
+                        <div class="txn-detail-sub">
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">User ID</span>
+                            <span class="txn-detail-sub-val">#{{ cp.id }}</span>
+                          </div>
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">Email</span>
+                            <span class="txn-detail-sub-val">{{ cp.email|default:"—" }}</span>
+                          </div>
+                          <div class="txn-detail-sub-item">
+                            <span class="txn-detail-sub-key">Name</span>
+                            <span class="txn-detail-sub-val">{{ cp.name|default:"—" }}</span>
+                          </div>
+                        </div>
+                      {% endwith %}
+                    {% endif %}
+                  {% else %}
+                    <span class="txn-detail-value">—</span>
+                  {% endif %}
+                </div>
+                <div class="txn-detail-item">
+                  <span class="txn-detail-label">Completed At</span>
+                  <span class="txn-detail-value">{{ txn.completed_at|date:"d M Y, H:i"|default:"—" }}</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+  {% else %}
+  <div class="txn-empty">
+    <div class="txn-empty-icon">📭</div>
+    <p class="txn-empty-title">No transactions yet</p>
+    <p class="txn-empty-subtitle">Your transaction history will appear here once you make your first trade.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -236,12 +236,10 @@ class Deal(models.Model):
 ```python
 class Transaction(models.Model):
     TYPE_CHOICES = [
-        ('exchange', 'Exchange'),
         ('deposit', 'Deposit'),
         ('withdrawal', 'Withdrawal'),
-        ('offer_created', 'Offer Created'),
-        ('purchase', 'Purchase'),
-        ('sale', 'Sale'),
+        ('sell', 'Sell'),
+        ('buy', 'Buy'),
     ]
     
     STATUS_CHOICES = [

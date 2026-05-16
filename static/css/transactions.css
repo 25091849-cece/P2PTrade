@@ -1,0 +1,263 @@
+.txn-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.txn-thead-row {
+  border-bottom: 1px solid #1a2535;
+  color: #9aa6b2;
+  text-align: left;
+}
+
+.txn-th {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.txn-row {
+  border-bottom: 1px solid #1a2535;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.txn-row:hover,
+.txn-row.expanded {
+  background: #122035;
+  box-shadow: 0 8px 24px rgba(255, 149, 0, 0.15);
+}
+
+.txn-row.expanded {
+  border-bottom-color: transparent;
+}
+
+.txn-td {
+  padding: 0.875rem 1rem;
+}
+
+.txn-td-id {
+  padding: 0.875rem 1rem;
+  color: #9aa6b2;
+  font-family: 'Courier New', monospace;
+}
+
+.txn-td-pair {
+  padding: 0.875rem 1rem;
+  font-weight: 500;
+  color: #e6eef8;
+}
+
+.txn-td-mono {
+  padding: 0.875rem 1rem;
+  font-family: 'Courier New', monospace;
+  color: #e6eef8;
+}
+
+.txn-td-mono-muted {
+  padding: 0.875rem 1rem;
+  font-family: 'Courier New', monospace;
+  color: #9aa6b2;
+}
+
+.txn-td-date {
+  padding: 0.875rem 1rem;
+  color: #9aa6b2;
+  font-size: 0.8rem;
+}
+
+.txn-status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.txn-status-completed {
+  background: #1a4d2e;
+  color: #2dd4bf;
+}
+
+.txn-status-pending {
+  background: #2a1f00;
+  color: #ffb347;
+}
+
+.txn-status-failed {
+  background: #4d1a1a;
+  color: #f87171;
+}
+
+.txn-status-default {
+  background: #1e3a52;
+  color: #5eb3ff;
+}
+
+.txn-empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #9aa6b2;
+}
+
+.txn-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.txn-empty-title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.txn-empty-subtitle {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.txn-filter-tabs {
+  display: inline-flex;
+  position: relative;
+  margin-bottom: 1.25rem;
+  background: #0d1624;
+  border: 1px solid #1a2535;
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+}
+
+.txn-filter-indicator {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  border-radius: 0.35rem;
+  background: #ff9500;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
+  transition: left 0.25s ease, width 0.25s ease;
+  pointer-events: none;
+}
+
+.txn-filter-tab {
+  position: relative;
+  z-index: 1;
+  padding: 0.35rem 1.1rem;
+  border-radius: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #9aa6b2;
+  transition: color 0.2s ease;
+}
+
+.txn-filter-tab:hover {
+  color: #e6eef8;
+}
+
+.txn-filter-tab.active {
+  color: #0f1724;
+}
+
+.txn-row {
+  cursor: default;
+}
+
+.txn-row.expanded {
+  background: #122035;
+}
+
+.txn-detail-row {
+  display: table-row;
+}
+
+.txn-detail-cell {
+  padding: 0;
+}
+
+.txn-detail-content {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  background: #0b1520;
+  border-top: 1px solid transparent;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.5s ease, border-color 0.5s ease;
+}
+
+.txn-detail-row.open .txn-detail-content {
+  max-height: 120px;
+  opacity: 1;
+  padding-top: 0.875rem;
+  padding-bottom: 1rem;
+  border-top-color: #1a2535;
+}
+
+.txn-detail-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff9500;
+  margin-bottom: 0.4rem;
+}
+
+.txn-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 1rem;
+}
+
+.txn-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.txn-detail-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9aa6b2;
+}
+
+.txn-detail-value {
+  font-size: 0.8rem;
+  color: #e6eef8;
+  font-family: 'Courier New', monospace;
+}
+
+.txn-detail-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-top: 0.1rem;
+}
+
+.txn-detail-sub-item {
+  display: flex;
+  gap: 0.35rem;
+  align-items: baseline;
+  font-size: 0.75rem;
+}
+
+.txn-detail-sub-key {
+  color: #9aa6b2;
+  flex-shrink: 0;
+  min-width: 3.5rem;
+}
+
+.txn-detail-sub-val {
+  color: #e6eef8;
+  font-family: 'Courier New', monospace;
+}
