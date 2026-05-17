@@ -5,26 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/disputes/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/admin/management/manage_user.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/admin/transactions/admin_transaction.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/disputes/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/disputes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/disputes/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/dashboard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/tailwind.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/tailwind.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/account/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/account/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/account/signup_success.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/signup_success.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_dashboard_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard_section.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/transactions/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/transactions/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactions/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/transactions/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactions/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/transactions/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,11 +23,16 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
-      <entry key="agent-panel" value="Auto" />
-      <entry key="chat-panel" value="Auto" />
+      <entry key="agent-panel" value="Claude Haiku 4.5" />
+      <entry key="chat-panel" value="Claude Haiku 4.5" />
     </selectedModels>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="pr-10" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -88,7 +75,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "django.template.preview.state": "SHOW_EDITOR",
-    "git-widget-placeholder": "feature/cecelia",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/Asus/Documents/GitHub/P2PTrade/templates/admin/management",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -96,6 +83,7 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "npm.css:build.executor": "Run",
+    "npm.css:watch.executor": "Run",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -104,7 +92,7 @@
       <recent name="C:\Users\Asus\Documents\GitHub\P2PTrade\templates\admin\management" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.css:build">
+  <component name="RunManager" selected="Django Server.P2PTrade">
     <configuration name="python manage.py migrate" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="P2PTrade" />
       <option name="ENV_FILES" value="" />
@@ -213,9 +201,20 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="css:watch" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="css:watch" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="npm.css:build" />
+        <item itemvalue="npm.css:watch" />
         <item itemvalue="Python.python manage.py runserver" />
         <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py showmigrations" />
@@ -243,6 +242,7 @@
       <workItem from="1777892671400" duration="46000" />
       <workItem from="1778149320923" duration="2639000" />
       <workItem from="1778386207197" duration="6124000" />
+      <workItem from="1778987966882" duration="2371000" />
     </task>
     <servers />
   </component>
