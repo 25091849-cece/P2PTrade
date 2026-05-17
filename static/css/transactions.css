@@ -202,13 +202,39 @@
   border-top-color: #1a2535;
 }
 
+.txn-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
 .txn-detail-title {
   font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #ff9500;
-  margin-bottom: 0.4rem;
+}
+
+.txn-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #9aa6b2;
+  background: transparent;
+  border: 1px solid #1a2535;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.txn-export-btn:hover {
+  border-color: #ff9500;
+  color: #ff9500;
 }
 
 .txn-detail-grid {
