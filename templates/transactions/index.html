@@ -80,7 +80,12 @@
         <tr class="txn-detail-row" id="txn-detail-{{ txn.id }}">
           <td class="txn-detail-cell" colspan="8">
             <div class="txn-detail-content">
-              <div class="txn-detail-title">Transaction Details</div>
+              <div class="txn-detail-header">
+                <span class="txn-detail-title">Transaction Details</span>
+                <a class="txn-export-btn" href="{% url 'transactions:export_pdf' txn.id %}">
+                  ↓ Export PDF
+                </a>
+              </div>
               <div class="txn-detail-grid">
                 <div class="txn-detail-item">
                   <span class="txn-detail-label">Payment Reference</span>

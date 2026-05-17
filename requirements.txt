@@ -12,4 +12,5 @@ python-dateutil==2.8.2
 pytz==2023.3
 requests==2.31.0
 gunicorn==20.1.0
+reportlab==4.5.1
 
