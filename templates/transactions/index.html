@@ -27,6 +27,7 @@
     <button class="txn-filter-tab" data-filter="completed">Completed</button>
     <button class="txn-filter-tab" data-filter="pending">Pending</button>
     <button class="txn-filter-tab" data-filter="failed">Failed</button>
+    <button class="txn-filter-tab" data-filter="dispute_raised">Dispute Raised</button>
   </div>
 
   <div class="txn-table-wrapper">
@@ -66,11 +67,13 @@
           <td class="txn-td-mono-muted">{{ txn.rate }}</td>
           <td class="txn-td">
             {% if txn.status == 'completed' %}
-              <span class="txn-status-badge txn-status-completed">{{ txn.status }}</span>
+              <span class="txn-status-badge txn-status-completed">Completed</span>
             {% elif txn.status == 'pending' %}
-              <span class="txn-status-badge txn-status-pending">{{ txn.status }}</span>
+              <span class="txn-status-badge txn-status-pending">Pending</span>
             {% elif txn.status == 'failed' %}
-              <span class="txn-status-badge txn-status-failed">{{ txn.status }}</span>
+              <span class="txn-status-badge txn-status-failed">Failed</span>
+            {% elif txn.status == 'dispute_raised' %}
+              <span class="txn-status-badge txn-status-dispute">Dispute Raised</span>
             {% else %}
               <span class="txn-status-badge txn-status-default">{{ txn.status }}</span>
             {% endif %}
@@ -82,9 +85,21 @@
             <div class="txn-detail-content">
               <div class="txn-detail-header">
                 <span class="txn-detail-title">Transaction Details</span>
-                <a class="txn-export-btn" href="{% url 'transactions:export_pdf' txn.id %}">
-                  ↓ Export PDF
-                </a>
+                <div style="display: flex; gap: 0.5rem;">
+                  {% if txn.status == 'completed' %}
+                  <a class="txn-dispute-btn" href="{% url 'disputes:raise' txn.id %}">
+                    ⚑ Raise a Dispute
+                  </a>
+                  {% elif txn.status == 'dispute_raised' %}
+                  <form method="POST" action="{% url 'disputes:cancel' txn.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="txn-dispute-btn">✕ Cancel Dispute</button>
+                  </form>
+                  {% endif %}
+                  <a class="txn-export-btn" href="{% url 'transactions:export_pdf' txn.id %}">
+                    ↓ Export PDF
+                  </a>
+                </div>
               </div>
               <div class="txn-detail-grid">
                 <div class="txn-detail-item">

@@ -1,0 +1,104 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/disputes.css' %}">
+{% endblock %}
+
+{% block dashboard_main %}
+<div class="dashboard-header">
+  <a onclick="history.back()" class="dispute-back-btn">← Back</a>
+  <h1 class="text-3xl font-bold mb-2">Raise a Dispute</h1>
+  <p class="text-[#9aa6b2]">Transaction #{{ txn.id }} — {{ txn.payment_reference }}</p>
+</div>
+
+<div class="dispute-layout">
+
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">Transaction Summary</h3>
+    </div>
+    <div class="dispute-summary-list">
+
+      <div class="dispute-summary-item">
+        <span class="dispute-summary-label">Currency Pair</span>
+        <span class="dispute-summary-value">{{ txn.from_currency.code }} → {{ txn.to_currency.code }}</span>
+      </div>
+
+      <div class="dispute-summary-item">
+        <span class="dispute-summary-label">Amount</span>
+        <span class="dispute-summary-value-mono">{{ txn.amount }} {{ txn.from_currency.code }}</span>
+      </div>
+
+      <div class="dispute-summary-item">
+        <span class="dispute-summary-label">Received</span>
+        <span class="dispute-summary-value-mono">{{ txn.received_amount }} {{ txn.to_currency.code }}</span>
+      </div>
+
+      <div class="dispute-summary-item">
+        <span class="dispute-summary-label">Counterparty</span>
+        <span class="dispute-summary-value">{{ counterparty.name|default:counterparty.email }}</span>
+        <span class="dispute-summary-sub">{{ counterparty.email }}</span>
+      </div>
+
+      <div class="dispute-summary-item">
+        <span class="dispute-summary-label">Completed At</span>
+        <span class="dispute-summary-value">{{ txn.completed_at|date:"d M Y, H:i"|default:"—" }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h3 class="section-title">Dispute Details</h3>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="dispute-form-fields">
+
+        <div class="dispute-field">
+          <label class="dispute-field-label">Reason for Dispute</label>
+          <textarea
+            name="reason"
+            required
+            rows="3"
+            placeholder="Describe what happened. E.g. payment was made but funds were never received..."
+            class="dispute-textarea"
+          ></textarea>
+        </div>
+
+        <div class="dispute-field">
+          <label class="dispute-field-label">
+            Evidence <span class="dispute-field-label-hint">(screenshot, payment proof, etc.)</span>
+          </label>
+          <div class="dispute-file-row">
+            <label for="evidence-input" class="dispute-file-btn">↑ Choose File</label>
+            <span id="evidence-filename" class="dispute-filename">No file chosen</span>
+            <input
+              id="evidence-input"
+              type="file"
+              name="evidence"
+              accept="image/*,.pdf"
+              style="display: none;"
+              onchange="document.getElementById('evidence-filename').textContent = this.files[0] ? this.files[0].name : 'No file chosen'"
+            />
+          </div>
+        </div>
+
+        <div class="dispute-warning">
+          <p>⚠ Once submitted, this dispute will be reviewed by our admin team. Both parties will be notified.</p>
+        </div>
+
+        <div class="dispute-actions">
+          <a href="{% url 'transactions:index' %}" class="dispute-cancel-btn">Cancel</a>
+          <button type="submit" class="dispute-submit-btn">⚑ Submit Dispute</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

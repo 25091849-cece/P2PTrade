@@ -24,6 +24,7 @@
 
 .txn-row {
   border-bottom: 1px solid #1a2535;
+  cursor: default;
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -99,6 +100,11 @@
   color: #5eb3ff;
 }
 
+.txn-status-dispute {
+  background: #2d1a4d;
+  color: #c084fc;
+}
+
 .txn-empty {
   padding: 3rem 2rem;
   text-align: center;
@@ -163,13 +169,6 @@
   color: #0f1724;
 }
 
-.txn-row {
-  cursor: default;
-}
-
-.txn-row.expanded {
-  background: #122035;
-}
 
 .txn-detail-row {
   display: table-row;
@@ -191,14 +190,14 @@
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.5s ease, border-color 0.5s ease;
+  transition: max-height 0.9s ease, opacity 0.9s ease, padding 0.9s ease, border-color 0.9s ease;
 }
 
 .txn-detail-row.open .txn-detail-content {
-  max-height: 120px;
+  max-height: 300px;
   opacity: 1;
   padding-top: 0.875rem;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
   border-top-color: #1a2535;
 }
 
@@ -235,6 +234,48 @@
 .txn-export-btn:hover {
   border-color: #ff9500;
   color: #ff9500;
+}
+
+.txn-dispute-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #f87171;
+  background: transparent;
+  border: 1px solid #4d1a1a;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.txn-dispute-btn:hover {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.txn-cancel-dispute-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #9aa6b2;
+  background: transparent;
+  border: 1px solid #1a2535;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.txn-cancel-dispute-btn:hover {
+  border-color: #9aa6b2;
+  color: #e6eef8;
 }
 
 .txn-detail-grid {
