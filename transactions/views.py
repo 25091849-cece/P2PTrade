@@ -76,8 +76,8 @@ def export_pdf(request, txn_id):
     details = [
         row('Transaction ID',    f'#{txn.id}'),
         row('Payment Reference', txn.payment_reference or '—'),
-        row('Type',              txn.type.capitalize()),
-        row('Status',            txn.status.capitalize()),
+        row('Type',              txn.type.replace('_', ' ').title()),
+        row('Status',            txn.status.replace('_', ' ').title()),
         row('Currency Pair',     f'{txn.from_currency.code} → {txn.to_currency.code}'),
         row('Amount',            f'{txn.amount} {txn.from_currency.code}'),
         row('Received Amount',   f'{txn.received_amount} {txn.to_currency.code}' if txn.received_amount else '—'),

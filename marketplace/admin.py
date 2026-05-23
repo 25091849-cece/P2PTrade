@@ -129,6 +129,7 @@ class TransactionAdmin(admin.ModelAdmin):
             'completed': 'green',
             'pending': 'orange',
             'failed': 'red',
+            'dispute_raised': 'purple',
         }
         color = colors.get(obj.status, 'gray')
         return format_html(

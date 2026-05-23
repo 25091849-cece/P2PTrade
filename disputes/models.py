@@ -45,7 +45,7 @@ class Dispute(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     # Evidence
-    evidence = models.TextField(null=True, blank=True)  # Description or base64 encoded
+    evidence = models.FileField(upload_to='disputes/evidence/', null=True, blank=True)
     seller_confirmation_status = models.CharField(max_length=100, null=True, blank=True)
 
     # Timestamps

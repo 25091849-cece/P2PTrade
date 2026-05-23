@@ -52,7 +52,7 @@ class Deal(models.Model):
 
     def get_receive_amount(self):
         """Calculate how much to_currency the buyer will receive."""
-        return self.amount * self.rate
+        return round(self.amount / self.rate, 2)
 
 
 class Transaction(models.Model):
@@ -67,6 +67,7 @@ class Transaction(models.Model):
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
+        ('dispute_raised', 'Dispute Raised'),
     ]
 
     id = models.BigAutoField(primary_key=True)
@@ -146,7 +147,7 @@ class Transaction(models.Model):
             rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             self.payment_reference = f'P2P{ts}{rand}'
         if self.amount and self.rate:
-            self.received_amount = round(self.amount * self.rate, 2)
+            self.received_amount = round(self.amount / self.rate, 2)
         super().save(*args, **kwargs)
 
     def mark_completed(self):
