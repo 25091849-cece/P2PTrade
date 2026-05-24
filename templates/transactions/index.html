@@ -18,6 +18,9 @@
 <div class="content-section" style="width: 100%;">
   <div class="section-header">
     <h3 class="section-title">Transactions</h3>
+    <a class="txn-export-btn" href="{% url 'transactions:export_summary' %}">
+      ↓ Export Summary
+    </a>
   </div>
 
   {% if transactions %}
