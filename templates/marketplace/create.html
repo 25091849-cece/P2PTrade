@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Deal | P2PTrade{% endblock %}
+
+{% block content %}
+<div class="px-8 py-8 max-w-3xl">
+  <a href="{% url 'marketplace:index' %}" class="inline-flex items-center gap-2 text-p2p-muted hover:text-white mb-4 text-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    Back to Marketplace
+  </a>
+
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-2">Create a Deal</h1>
+    <p class="text-p2p-muted">Offer a currency exchange — your deal expires in 48 hours</p>
+  </div>
+
+  <form method="POST" class="bg-p2p-card border border-p2p-border rounded-2xl p-6 space-y-5">
+    {% csrf_token %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-sm font-medium text-gray-200 mb-2">From Currency</label>
+        <select name="from_currency" required
+                class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-3 text-white focus:outline-none focus:border-p2p-accent">
+          <option value="">Select…</option>
+          {% for c in currencies %}
+            <option value="{{ c.code }}" {% if form.from_currency == c.code %}selected{% endif %}>{{ c.code }} — {{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-200 mb-2">To Currency</label>
+        <select name="to_currency" required
+                class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-3 text-white focus:outline-none focus:border-p2p-accent">
+          <option value="">Select…</option>
+          {% for c in currencies %}
+            <option value="{{ c.code }}" {% if form.to_currency == c.code %}selected{% endif %}>{{ c.code }} — {{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-200 mb-2">Amount</label>
+        <input type="number" name="amount" step="0.01" min="0.01" value="{{ form.amount|default_if_none:'' }}" required
+               placeholder="1000.00"
+               class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-3 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent">
+        <p class="text-xs text-p2p-muted mt-1">Quantity of "from" currency you're offering</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-200 mb-2">Exchange Rate</label>
+        <input type="number" name="rate" step="0.0001" min="0.0001" value="{{ form.rate|default_if_none:'' }}" required
+               placeholder="1.0850"
+               class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-3 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent">
+        <p class="text-xs text-p2p-muted mt-1">How much "to" currency per 1 "from"</p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-200 mb-2">Market Trend</label>
+        <div class="flex gap-3">
+          <label class="flex-1 cursor-pointer">
+            <input type="radio" name="trend" value="up" class="peer sr-only" {% if form.trend == 'up' or not form.trend %}checked{% endif %}>
+            <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-green-500 peer-checked:bg-green-500/10 transition">
+              <span class="text-green-400 text-lg">↑</span>
+              <span class="text-white font-medium">Up</span>
+            </div>
+          </label>
+          <label class="flex-1 cursor-pointer">
+            <input type="radio" name="trend" value="down" class="peer sr-only" {% if form.trend == 'down' %}checked{% endif %}>
+            <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-red-500 peer-checked:bg-red-500/10 transition">
+              <span class="text-red-400 text-lg">↓</span>
+              <span class="text-white font-medium">Down</span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
+      <div class="flex gap-3">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p>Your deal will be visible in the marketplace for 48 hours. Other users can accept it during this time.</p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-2 border-t border-p2p-border">
+      <a href="{% url 'marketplace:index' %}" class="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-p2p-border transition">Cancel</a>
+      <button type="submit" class="inline-flex items-center gap-2 bg-p2p-accent text-p2p-bg font-semibold px-5 py-2.5 rounded-xl hover:bg-amber-400 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Create Deal
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -211,4 +211,8 @@ def admin_index(request):
     transactions = Transaction.objects.select_related(
         'buyer', 'seller', 'user', 'from_currency', 'to_currency'
     ).order_by('-created_at')
-    return render(request, 'admin/transactions/admin_transaction.html', {'transactions': transactions})
+    return render(request, 'admin/transactions/admin_transaction.html', {
+        'transactions': transactions,
+        'total_transactions': transactions.count(),
+        'pending_transactions': transactions.filter(status='pending').count(),
+    })

@@ -1,36 +1,122 @@
-{% extends 'dashboard.html' %}
-{% load url_utils %}
+{% extends 'base.html' %}
 
-{% block sidebar_nav %}
-  <nav class="admin-sidebar-nav mt-6">
-    {% with rm=request.resolver_match %}
-      <a href="{% url_or_placeholder 'accounts:dashboard' %}" class="nav-link admin-nav-link {% if rm and rm.url_name == 'dashboard' %}active{% endif %}">
-        <span class="nav-icon">▣</span>
-        <span>Dashboard</span>
-      </a>
-      <div class="mt-3">
-        <a href="{% url 'accounts:manage_user' %}" class="nav-link admin-nav-link {% if rm and rm.url_name == 'manage_user' %}active{% endif %}">
-          <span class="nav-icon">👤</span>
-          <span>Manage Users</span>
-        </a>
+{% block title %}Admin Dashboard | P2PTrade{% endblock %}
+
+{% block content %}
+<div class="px-8 py-8">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
+    <p class="text-p2p-muted">Platform overview and statistics</p>
+  </div>
+
+  {# Top stat cards #}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
+    <div class="bg-p2p-card border border-p2p-border rounded-2xl p-5">
+      <div class="flex items-start justify-between">
+        <div class="w-12 h-12 rounded-xl bg-p2p-accent/15 text-p2p-accent flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0zm6 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </div>
+        <span class="text-xs text-green-400 font-medium">↗ {{ stats.new_users_today|default:"0" }}</span>
       </div>
-      <div class="mt-3">
-        <a href="{% url_or_placeholder 'transactions:admin_index' %}" class="nav-link admin-nav-link {% if rm and rm.url_name == 'admin_index' %}active{% endif %}">
-          <span class="nav-icon">▣</span>
-          <span>All Transactions</span>
-        </a>
+      <div class="text-sm text-p2p-muted mt-3">Total Users</div>
+      <div class="font-display text-4xl font-bold text-white mt-1">{{ stats.total_users }}</div>
+    </div>
+
+    <div class="bg-p2p-card border border-p2p-border rounded-2xl p-5">
+      <div class="flex items-start justify-between">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <span class="text-xs text-green-400 font-medium">↗ {{ stats.new_transactions_today|default:"0" }}</span>
       </div>
-      <div class="mt-3">
-        <a href="{% url 'disputes:index' %}" class="nav-link admin-nav-link {% if rm and rm.namespace == 'disputes' %}active{% endif %}">
-          <span class="nav-icon">△</span>
-          <span>Disputes</span>
-        </a>
+      <div class="text-sm text-p2p-muted mt-3">Total Transactions</div>
+      <div class="font-display text-4xl font-bold text-white mt-1">{{ stats.total_transactions }}</div>
+    </div>
+
+    <div class="bg-p2p-card border border-p2p-border rounded-2xl p-5">
+      <div class="flex items-start justify-between">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <span class="text-xs text-amber-400 font-medium">Active</span>
       </div>
-    {% endwith %}
-  </nav>
+      <div class="text-sm text-p2p-muted mt-3">Pending Disputes</div>
+      <div class="font-display text-4xl font-bold text-white mt-1">{{ stats.pending_disputes }}</div>
+    </div>
+  </div>
+
+  {# Two-column bottom #}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {# Platform Health #}
+    <section class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+      <h2 class="font-display text-xl font-bold text-white mb-5">Platform Health</h2>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-4 rounded-xl bg-p2p-bg/60 border border-p2p-border">
+          <span class="text-sm text-p2p-muted">Active Deals</span>
+          <span class="font-display text-lg font-bold text-white">{{ stats.active_deals }}</span>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-xl bg-p2p-bg/60 border border-p2p-border">
+          <span class="text-sm text-p2p-muted">Active Users</span>
+          <span class="font-display text-lg font-bold text-white">{{ stats.active_users }}</span>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-xl bg-p2p-bg/60 border border-p2p-border">
+          <span class="text-sm text-p2p-muted">Resolved Disputes</span>
+          <span class="font-display text-lg font-bold text-green-400">{{ stats.resolved_disputes }}</span>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-xl bg-p2p-bg/60 border border-p2p-border">
+          <span class="text-sm text-p2p-muted">Pending Disputes</span>
+          <span class="font-display text-lg font-bold text-amber-400">{{ stats.pending_disputes }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# Trade Volume by Currency #}
+    <section class="lg:col-span-2 bg-p2p-card border border-p2p-border rounded-2xl p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-p2p-accent/15 text-p2p-accent flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div>
+          <h2 class="font-display text-xl font-bold text-white">Trade Volume by Currency</h2>
+          <p class="text-xs text-p2p-muted">Top traded foreign currencies</p>
+        </div>
+      </div>
+
+      <div class="h-72">
+        <canvas id="volumeChart"></canvas>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const volumeData = {{ volume_data|safe }};
+  const ctx = document.getElementById('volumeChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: volumeData.map(d => d.code),
+      datasets: [{
+        data: volumeData.map(d => d.volume),
+        backgroundColor: '#60a5fa',
+        borderRadius: 6,
+        barThickness: 28,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#9ca3af' }, grid: { display: false } },
+        y: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#1f2937' },
+          beginAtZero: true,
+        }
+      }
+    }
+  });
+</script>
 {% endblock %}
-
-{% block dashboard_main %}
-  {% include 'admin_dashboard_section.html' %}
-{% endblock %}
-
