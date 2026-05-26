@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}Dispute #{{ dispute.id }} | P2PTrade Admin{% endblock %}
+
+{% block content %}
+<div class="px-8 py-8 max-w-6xl">
+  <a href="{% url 'disputes:index' %}" class="inline-flex items-center gap-2 text-p2p-muted hover:text-white mb-4 text-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    Back to Disputes
+  </a>
+
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-4xl font-bold text-white mb-2">Dispute #{{ dispute.id }}</h1>
+      <p class="text-p2p-muted">Transaction #{{ dispute.transaction_id }} • Raised {{ dispute.created_at|date:"d M Y, H:i" }}</p>
+    </div>
+    {% if dispute.status == 'pending' %}
+      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-red-500/15 text-red-400 border border-red-500/30">Pending</span>
+    {% elif dispute.status == 'under_review' %}
+      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30">Under Review</span>
+    {% elif dispute.status == 'resolved' %}
+      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-500/15 text-green-400 border border-green-500/30">Resolved</span>
+    {% endif %}
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {# Left: details + invoice + thread #}
+    <div class="lg:col-span-2 space-y-6">
+      {# Parties + transaction summary #}
+      <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+        <h2 class="font-display text-lg font-bold text-white mb-5">Parties & Transaction</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Buyer</div>
+            <div class="text-white font-medium">{{ dispute.buyer.name|default:dispute.buyer.email }}</div>
+            <div class="text-sm text-p2p-muted">{{ dispute.buyer.email }}</div>
+          </div>
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Seller</div>
+            <div class="text-white font-medium">{{ dispute.seller.name|default:dispute.seller.email }}</div>
+            <div class="text-sm text-p2p-muted">{{ dispute.seller.email }}</div>
+          </div>
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Currency Pair</div>
+            <div class="text-white font-medium">{{ dispute.from_currency.code }} → {{ dispute.to_currency.code }}</div>
+          </div>
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Raised By</div>
+            <div class="text-white font-medium">
+              {{ dispute.raised_by.email }}
+              <span class="text-xs text-p2p-muted ml-1">
+                ({% if dispute.raised_by_id == dispute.buyer_id %}Buyer{% else %}Seller{% endif %})
+              </span>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Amount</div>
+            <div class="font-mono text-white">{{ dispute.myr_amount|floatformat:2 }} {{ dispute.from_currency.code }}</div>
+          </div>
+          <div>
+            <div class="text-xs text-p2p-muted uppercase mb-1">Received</div>
+            <div class="font-mono text-white">{{ dispute.foreign_amount|floatformat:2 }} {{ dispute.to_currency.code }}</div>
+          </div>
+        </div>
+
+        <div class="mt-5 pt-5 border-t border-p2p-border">
+          <div class="text-xs text-p2p-muted uppercase mb-2">Reason</div>
+          <p class="text-gray-200 whitespace-pre-wrap">{{ dispute.reason }}</p>
+        </div>
+      </div>
+
+      {# Invoice viewer #}
+      <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-display text-lg font-bold text-white">Invoice / Evidence</h2>
+          {% if dispute.evidence %}
+            <a href="{{ dispute.evidence.url }}" download
+               class="inline-flex items-center gap-2 text-sm text-p2p-accent hover:text-amber-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Download
+            </a>
+          {% endif %}
+        </div>
+
+        {% if dispute.evidence %}
+          {% with url=dispute.evidence.url name=dispute.evidence.name|lower %}
+            {% if '.pdf' in name %}
+              <embed src="{{ url }}" type="application/pdf" class="w-full h-[600px] rounded-xl border border-p2p-border bg-white">
+            {% else %}
+              <a href="{{ url }}" target="_blank" class="block">
+                <img src="{{ url }}" alt="Invoice" class="w-full max-h-[600px] object-contain rounded-xl border border-p2p-border bg-p2p-bg">
+              </a>
+            {% endif %}
+          {% endwith %}
+        {% else %}
+          <div class="text-center text-p2p-muted py-12 bg-p2p-bg/40 rounded-xl border border-dashed border-p2p-border">
+            No invoice was attached to this dispute.
+          </div>
+        {% endif %}
+      </div>
+
+      {# Thread #}
+      <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+        <h2 class="font-display text-lg font-bold text-white mb-5">Conversation</h2>
+        <div class="space-y-3 mb-5 max-h-96 overflow-y-auto">
+          {% for msg in thread %}
+            <div class="flex gap-3 {% if msg.is_admin_message %}flex-row-reverse{% endif %}">
+              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-semibold
+                          {% if msg.is_admin_message %}bg-p2p-accent/20 text-p2p-accent{% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                {{ msg.sender.name|default:msg.sender.username|slice:":1"|upper }}
+              </div>
+              <div class="flex-1 {% if msg.is_admin_message %}text-right{% endif %}">
+                <div class="text-xs text-p2p-muted mb-1">{{ msg.sender.email }} • {{ msg.created_at|timesince }} ago</div>
+                <div class="inline-block px-4 py-2 rounded-xl bg-p2p-bg/60 border border-p2p-border text-gray-200 text-sm">{{ msg.message }}</div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-center text-p2p-muted py-6">No messages yet</div>
+          {% endfor %}
+        </div>
+
+        <form method="POST" class="flex gap-2">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="reply">
+          <input name="message" required placeholder="Reply as admin..."
+                 class="flex-1 bg-p2p-bg border border-p2p-border rounded-xl px-4 py-2.5 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent">
+          <button type="submit" class="bg-p2p-accent text-p2p-bg font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-400 transition">Send</button>
+        </form>
+      </div>
+    </div>
+
+    {# Right: actions #}
+    <div class="space-y-6">
+      {% if dispute.status == 'pending' %}
+        <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+          <h2 class="font-display text-lg font-bold text-white mb-4">Move to Review</h2>
+          <p class="text-sm text-p2p-muted mb-4">Mark this dispute as under review while you investigate.</p>
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="mark_under_review">
+            <button type="submit" class="w-full bg-amber-500 text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-400 transition">Mark Under Review</button>
+          </form>
+        </div>
+      {% endif %}
+
+      {% if dispute.status != 'resolved' %}
+        <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+          <h2 class="font-display text-lg font-bold text-white mb-4">Resolve Dispute</h2>
+          <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="resolve">
+
+            <div>
+              <label class="block text-sm text-p2p-muted mb-2">Resolution Type</label>
+              <select name="resolution_type" required
+                      class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-p2p-accent">
+                <option value="">Select…</option>
+                {% for value, label in resolution_choices %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm text-p2p-muted mb-2">Buyer Refund Amount</label>
+              <input type="number" step="0.01" name="buyer_refund_amount" placeholder="0.00"
+                     class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2.5 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent">
+            </div>
+
+            <div>
+              <label class="block text-sm text-p2p-muted mb-2">Seller Refund Amount</label>
+              <input type="number" step="0.01" name="seller_refund_amount" placeholder="0.00"
+                     class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2.5 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent">
+            </div>
+
+            <div>
+              <label class="block text-sm text-p2p-muted mb-2">Resolution Notes</label>
+              <textarea name="resolution_notes" rows="3" required
+                        class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2.5 text-white placeholder:text-p2p-muted focus:outline-none focus:border-p2p-accent resize-none"></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-p2p-accent text-p2p-bg font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-400 transition">Submit Resolution</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="bg-green-500/10 border border-green-500/30 rounded-2xl p-6">
+          <h2 class="font-display text-lg font-bold text-green-300 mb-4">Resolution</h2>
+          {% with r=dispute.resolution %}
+            <div class="text-sm space-y-3">
+              <div><span class="text-p2p-muted">Type:</span> <span class="text-white font-medium">{{ r.get_resolution_type_display }}</span></div>
+              {% if r.buyer_refund_amount %}<div><span class="text-p2p-muted">Buyer refund:</span> <span class="text-white">{{ r.buyer_refund_amount }}</span></div>{% endif %}
+              {% if r.seller_refund_amount %}<div><span class="text-p2p-muted">Seller refund:</span> <span class="text-white">{{ r.seller_refund_amount }}</span></div>{% endif %}
+              {% if r.resolved_by_admin %}<div><span class="text-p2p-muted">By:</span> <span class="text-white">{{ r.resolved_by_admin.email }}</span></div>{% endif %}
+              <div><span class="text-p2p-muted">Resolved:</span> <span class="text-white">{{ r.resolved_at|date:"d M Y, H:i" }}</span></div>
+              {% if r.resolution_notes %}
+                <div class="pt-3 border-t border-p2p-border/50">
+                  <div class="text-p2p-muted text-xs uppercase mb-1">Notes</div>
+                  <p class="text-gray-200 whitespace-pre-wrap">{{ r.resolution_notes }}</p>
+                </div>
+              {% endif %}
+            </div>
+          {% endwith %}
+        </div>
+      {% endif %}
+
+      {# Activity log #}
+      <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6">
+        <h2 class="font-display text-lg font-bold text-white mb-4">Activity</h2>
+        <div class="space-y-3">
+          {% for log in activity_logs %}
+            <div class="text-sm flex gap-3">
+              <div class="w-2 h-2 rounded-full bg-p2p-accent mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-gray-200">{{ log.action }}</div>
+                <div class="text-xs text-p2p-muted">{{ log.timestamp|timesince }} ago{% if log.actor %} • {{ log.actor.email }}{% endif %}</div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-sm text-p2p-muted">No activity yet</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
