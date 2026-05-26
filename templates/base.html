@@ -1,0 +1,105 @@
+{% load static %}
+{% load url_utils %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}P2PTrade{% endblock %}</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'p2p-bg': '#0a0e17',
+            'p2p-sidebar': '#0d121c',
+            'p2p-card': '#111827',
+            'p2p-border': '#1f2937',
+            'p2p-accent': '#f5a623',
+            'p2p-accent-soft': '#3a2e1a',
+            'p2p-muted': '#9ca3af',
+          },
+          fontFamily: {
+            'display': ['Orbitron', 'system-ui', 'sans-serif'],
+            'sans': ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0a0e17; color: #e5e7eb; }
+    .font-display { font-family: 'Orbitron', system-ui, sans-serif; letter-spacing: 0.02em; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0e17; }
+    ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-p2p-bg text-gray-100">
+
+  <div class="flex min-h-screen">
+    {# Sidebar #}
+    <aside class="w-64 bg-p2p-sidebar border-r border-p2p-border flex flex-col fixed h-screen">
+      <div class="px-6 pt-7 pb-6">
+        <a href="{% url 'accounts:dashboard' %}" class="font-display text-2xl font-bold tracking-wider">
+          <span class="text-p2p-accent">P2P</span><span class="text-white">TRADE</span>
+        </a>
+      </div>
+
+      <nav class="flex-1 px-4 space-y-1">
+        {% if request.user.is_authenticated and request.user.is_admin %}
+          {% include 'partials/sidebar_admin.html' %}
+        {% else %}
+          {% include 'partials/sidebar_user.html' %}
+        {% endif %}
+      </nav>
+
+      {% if request.user.is_authenticated %}
+        <div class="px-4 pb-5 pt-4 border-t border-p2p-border">
+          <div class="flex items-center gap-3 px-2">
+            <div class="w-9 h-9 rounded-full bg-p2p-accent/20 text-p2p-accent flex items-center justify-center font-semibold text-sm">
+              {{ request.user.name|default:request.user.username|slice:":1"|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-white truncate">{{ request.user.name|default:request.user.username }}</div>
+              <div class="text-xs text-p2p-muted truncate">{{ request.user.email }}</div>
+            </div>
+          </div>
+          <a href="{% url 'accounts:logout' %}" class="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-p2p-muted hover:text-white hover:bg-p2p-card transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Logout
+          </a>
+        </div>
+      {% endif %}
+    </aside>
+
+    {# Main content #}
+    <main class="flex-1 ml-64 min-h-screen">
+      {% if messages %}
+        <div class="px-8 pt-6 space-y-2">
+          {% for message in messages %}
+            <div class="px-4 py-3 rounded-lg border {% if 'error' in message.tags %}bg-red-900/30 border-red-700 text-red-200{% elif 'success' in message.tags %}bg-green-900/30 border-green-700 text-green-200{% else %}bg-p2p-card border-p2p-border text-gray-200{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

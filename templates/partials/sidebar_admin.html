@@ -1,0 +1,33 @@
+{% load url_utils %}
+{% with rm=request.resolver_match %}
+  <a href="{% url 'accounts:dashboard' %}"
+     class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition
+            {% if rm.url_name == 'dashboard' %}bg-p2p-accent text-p2p-bg{% else %}text-gray-300 hover:bg-p2p-card hover:text-white{% endif %}">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+    Dashboard
+  </a>
+
+  <a href="{% url 'accounts:manage_user' %}"
+     class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition
+            {% if rm.url_name == 'manage_user' %}bg-p2p-accent text-p2p-bg{% else %}text-gray-300 hover:bg-p2p-card hover:text-white{% endif %}">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0zm6 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+    Manage Users
+  </a>
+
+  <a href="{% url 'transactions:admin_index' %}"
+     class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition
+            {% if rm.url_name == 'admin_index' %}bg-p2p-accent text-p2p-bg{% else %}text-gray-300 hover:bg-p2p-card hover:text-white{% endif %}">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    All Transactions
+  </a>
+
+  <a href="{% url 'disputes:index' %}"
+     class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition
+            {% if rm.namespace == 'disputes' %}bg-p2p-accent text-p2p-bg{% else %}text-gray-300 hover:bg-p2p-card hover:text-white{% endif %}">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    Disputes
+    {% if pending_disputes_count and pending_disputes_count > 0 %}
+      <span class="ml-auto inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white">{{ pending_disputes_count }}</span>
+    {% endif %}
+  </a>
+{% endwith %}
