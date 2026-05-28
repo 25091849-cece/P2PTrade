@@ -34,6 +34,7 @@ CURRENCY_META = {
 }
 
 DEPOSIT_CURRENCIES = tuple(CURRENCY_META.keys())
+WITHDRAW_CURRENCIES = DEPOSIT_CURRENCIES
 
 CURRENCY_SYMBOLS = {
     'MYR': 'RM',
@@ -281,6 +282,41 @@ def deposit(request):
 
     return render(request, 'wallets/deposit.html', {
         'currencies': DEPOSIT_CURRENCIES,
+        'selected_currency': selected_currency,
+        'amount_value': amount_value,
+        'error_message': error_message,
+    })
+
+
+@login_required
+def withdraw(request):
+    if not request.session.get(WALLET_VERIFIED_SESSION_KEY):
+        return redirect('wallets:index')
+
+    selected_currency = request.GET.get('currency', 'MYR').upper()
+    if selected_currency not in WITHDRAW_CURRENCIES:
+        selected_currency = 'MYR'
+
+    amount_value = ''
+    error_message = ''
+
+    if request.method == 'POST':
+        selected_currency = request.POST.get('currency', 'MYR').upper()
+        amount_value = request.POST.get('amount', '').strip()
+
+        if selected_currency not in WITHDRAW_CURRENCIES:
+            error_message = 'Please choose a supported withdrawal currency.'
+            selected_currency = 'MYR'
+        else:
+            try:
+                amount = Decimal(amount_value).quantize(Decimal('0.01'))
+                if amount <= 0:
+                    raise InvalidOperation
+            except (InvalidOperation, ValueError):
+                error_message = 'Please enter a valid withdrawal amount.'
+
+    return render(request, 'wallets/withdraw.html', {
+        'currencies': WITHDRAW_CURRENCIES,
         'selected_currency': selected_currency,
         'amount_value': amount_value,
         'error_message': error_message,
