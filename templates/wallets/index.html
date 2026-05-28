@@ -1,11 +1,9 @@
 {% extends "dashboard.html" %}
-{% load humanize %}
-
 {% load static %}
 
 {% block extra_css %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/wallets.css' %}">
+  <link rel="stylesheet" href="{% static 'wallets/css/wallets.css' %}">
 {% endblock %}
 
 {% block dashboard_main %}
@@ -28,7 +26,7 @@
             </div>
           </div>
 
-          <div class="wallet-amount">{{ card.amount|floatformat:2|intcomma }}</div>
+          <div class="wallet-amount">{{ card.display_amount }}</div>
 
           <div class="wallet-actions">
             <a href="#" class="wallet-action wallet-action-deposit" aria-label="Deposit {{ card.currency_code }}">
@@ -51,3 +49,25 @@
   </section>
 {% endblock %}
 
+{% block extra_js %}
+  <script>
+    const walletClearUrl = "{% url 'wallets:clear_verification' %}";
+    const walletCsrfToken = "{{ csrf_token }}";
+
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if (!link) {
+        return;
+      }
+
+      const nextUrl = new URL(link.href, window.location.origin);
+      if (nextUrl.origin === window.location.origin && !nextUrl.pathname.startsWith('/wallets/')) {
+        fetch(walletClearUrl, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': walletCsrfToken },
+          keepalive: true
+        });
+      }
+    });
+  </script>
+{% endblock %}

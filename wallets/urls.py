@@ -6,5 +6,6 @@ app_name = 'wallets'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('clear-verification/', views.clear_verification, name='clear_verification'),
 ]
 
