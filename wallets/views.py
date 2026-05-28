@@ -49,30 +49,54 @@ def _decorate_balance(balance):
     }
 
 
-def _clear_wallet_verification_failures(request):
+def _clear_wallet_verification_failures(request, wallet=None):
     request.session.pop(WALLET_ATTEMPTS_SESSION_KEY, None)
     request.session.pop(WALLET_LOCKED_UNTIL_SESSION_KEY, None)
+
+    if wallet and (wallet.verification_failed_attempts or wallet.verification_locked_until):
+        wallet.verification_failed_attempts = 0
+        wallet.verification_locked_until = None
+        wallet.save(update_fields=[
+            'verification_failed_attempts',
+            'verification_locked_until',
+            'updated_at',
+        ])
 
 
 def _clear_wallet_verification(request):
     request.session.pop(WALLET_VERIFIED_SESSION_KEY, None)
 
 
-def _get_wallet_lock_remaining_seconds(request):
+def _get_wallet_for_user(user):
+    try:
+        return Wallet.objects.prefetch_related('balances__currency').get(user=user)
+    except Wallet.DoesNotExist:
+        return None
+
+
+def _get_wallet_lock_remaining_seconds(request, wallet=None):
+    if wallet and wallet.verification_locked_until:
+        remaining_seconds = int((wallet.verification_locked_until - timezone.now()).total_seconds())
+        if remaining_seconds <= 0:
+            _clear_wallet_verification_failures(request, wallet)
+            return 0
+
+        return remaining_seconds
+
     locked_until = request.session.get(WALLET_LOCKED_UNTIL_SESSION_KEY)
     if not locked_until:
         return 0
 
     remaining_seconds = int(locked_until - timezone.now().timestamp())
     if remaining_seconds <= 0:
-        _clear_wallet_verification_failures(request)
+        _clear_wallet_verification_failures(request, wallet)
         return 0
 
     return remaining_seconds
 
 
-def _render_wallet_verification(request, **context):
-    remaining_seconds = _get_wallet_lock_remaining_seconds(request)
+def _render_wallet_verification(request, wallet=None, **context):
+    remaining_seconds = _get_wallet_lock_remaining_seconds(request, wallet)
     locked_minutes = max(1, (remaining_seconds + 59) // 60) if remaining_seconds else 0
 
     return render(request, 'wallets/verify.html', {
@@ -84,6 +108,8 @@ def _render_wallet_verification(request, **context):
 
 @login_required
 def index(request):
+    wallet = _get_wallet_for_user(request.user)
+
     if (
         request.method == 'GET'
         and request.session.get(WALLET_VERIFIED_SESSION_KEY)
@@ -92,41 +118,50 @@ def index(request):
         _clear_wallet_verification(request)
 
     if not request.session.get(WALLET_VERIFIED_SESSION_KEY):
-        if _get_wallet_lock_remaining_seconds(request):
-            return _render_wallet_verification(request)
+        if _get_wallet_lock_remaining_seconds(request, wallet):
+            return _render_wallet_verification(request, wallet=wallet)
 
         if request.method == 'POST':
             password = request.POST.get('password', '')
 
             if request.user.check_password(password):
-                _clear_wallet_verification_failures(request)
+                _clear_wallet_verification_failures(request, wallet)
                 request.session[WALLET_VERIFIED_SESSION_KEY] = True
                 return redirect('wallets:index')
 
-            failed_attempts = request.session.get(WALLET_ATTEMPTS_SESSION_KEY, 0) + 1
-            request.session[WALLET_ATTEMPTS_SESSION_KEY] = failed_attempts
+            if wallet:
+                wallet.verification_failed_attempts += 1
+                failed_attempts = wallet.verification_failed_attempts
+                update_fields = ['verification_failed_attempts', 'updated_at']
+            else:
+                failed_attempts = request.session.get(WALLET_ATTEMPTS_SESSION_KEY, 0) + 1
+                request.session[WALLET_ATTEMPTS_SESSION_KEY] = failed_attempts
 
             if failed_attempts >= MAX_WALLET_ATTEMPTS:
-                request.session[WALLET_LOCKED_UNTIL_SESSION_KEY] = (
-                    timezone.now() + timezone.timedelta(minutes=WALLET_LOCK_MINUTES)
-                ).timestamp()
-                return _render_wallet_verification(request)
+                locked_until = timezone.now() + timezone.timedelta(minutes=WALLET_LOCK_MINUTES)
+
+                if wallet:
+                    wallet.verification_locked_until = locked_until
+                    update_fields.append('verification_locked_until')
+                else:
+                    request.session[WALLET_LOCKED_UNTIL_SESSION_KEY] = locked_until.timestamp()
+
+            if wallet:
+                wallet.save(update_fields=update_fields)
+
+            if failed_attempts >= MAX_WALLET_ATTEMPTS:
+                return _render_wallet_verification(request, wallet=wallet)
 
             attempts_remaining = MAX_WALLET_ATTEMPTS - failed_attempts
-            return _render_wallet_verification(request, attempts_remaining=attempts_remaining)
+            return _render_wallet_verification(
+                request,
+                wallet=wallet,
+                attempts_remaining=attempts_remaining,
+            )
 
-        return _render_wallet_verification(request)
+        return _render_wallet_verification(request, wallet=wallet)
 
     wallet_cards = []
-
-    try:
-        wallet = (
-            Wallet.objects
-            .prefetch_related('balances__currency')
-            .get(user=request.user)
-        )
-    except Wallet.DoesNotExist:
-        wallet = None
 
     if wallet:
         wallet_cards = [
