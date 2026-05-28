@@ -1,7 +1,53 @@
 {% extends "dashboard.html" %}
+{% load humanize %}
+
+{% load static %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/wallets.css' %}">
+{% endblock %}
 
 {% block dashboard_main %}
-  <h2>Wallets (placeholder)</h2>
-  <p>This is a placeholder page for the wallets app. Replace this template in the wallets app when implementing the real UI.</p>
+  <section class="wallet-page" aria-labelledby="wallet-title">
+    <header class="wallet-header">
+      <h1 id="wallet-title" class="wallet-title">Wallet</h1>
+      <p class="wallet-subtitle">Manage your multi-currency balances</p>
+    </header>
+
+    <div class="wallet-grid">
+      {% for card in wallet_cards %}
+        <article class="wallet-card">
+          <div class="wallet-card-top">
+            <div>
+              <div class="wallet-currency-name">{{ card.currency_name }}</div>
+              <div class="wallet-currency-code">{{ card.currency_code }}</div>
+            </div>
+            <div class="wallet-currency-mark {{ card.accent_class }}" aria-hidden="true">
+              {% if card.currency_code == 'MYR' %}RM{% elif card.currency_code == 'USD' %}${% elif card.currency_code == 'EUR' %}&euro;{% elif card.currency_code == 'JPY' %}&yen;{% elif card.currency_code == 'GBP' %}&pound;{% else %}{{ card.currency_code }}{% endif %}
+            </div>
+          </div>
+
+          <div class="wallet-amount">{{ card.amount|floatformat:2|intcomma }}</div>
+
+          <div class="wallet-actions">
+            <a href="#" class="wallet-action wallet-action-deposit" aria-label="Deposit {{ card.currency_code }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <span>Deposit</span>
+            </a>
+            <a href="#" class="wallet-action wallet-action-withdraw" aria-label="Withdraw {{ card.currency_code }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M21 3 10 14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="m21 3-7 18-4-7-7-4 18-7Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Withdraw</span>
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock %}
 
