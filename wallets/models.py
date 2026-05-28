@@ -1,5 +1,17 @@
+from decimal import Decimal
+
 from django.db import models
 from django.core.exceptions import ValidationError
+
+
+INITIAL_BALANCES = {
+    'MYR': Decimal('45000.00'),
+    'USD': Decimal('10000.00'),
+}
+
+
+def get_initial_balance(currency_code):
+    return INITIAL_BALANCES.get(currency_code, Decimal('0.00'))
 
 
 class Wallet(models.Model):

@@ -16,12 +16,15 @@
     </a>
 
     <header class="wallet-deposit-header">
-      <h1 id="wallet-deposit-title" class="wallet-title">Create New Deal</h1>
+      <h1 id="wallet-deposit-title" class="wallet-title">Deposit Funds</h1>
       <p class="wallet-subtitle">Add funds to your wallet balance</p>
     </header>
 
     <form class="wallet-deposit-card" method="post">
       {% csrf_token %}
+      {% if error_message %}
+        <div class="wallet-form-error" role="alert">{{ error_message }}</div>
+      {% endif %}
       <div class="wallet-form-grid">
         <div class="wallet-form-field">
           <label for="deposit-currency">Deposit Currency</label>
@@ -34,7 +37,7 @@
 
         <div class="wallet-form-field">
           <label for="deposit-amount">Deposit Amount</label>
-          <input id="deposit-amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="1,000" required>
+          <input id="deposit-amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="1,000" value="{{ amount_value }}" required>
         </div>
       </div>
 
@@ -60,7 +63,7 @@
 
       <div class="wallet-form-actions">
         <a class="wallet-secondary-button" href="{% url 'wallets:index' %}">Cancel</a>
-        <button class="wallet-primary-button" type="submit">Create Deal</button>
+        <button class="wallet-primary-button" type="submit">Add Funds</button>
       </div>
     </form>
   </section>

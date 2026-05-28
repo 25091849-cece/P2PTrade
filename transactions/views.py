@@ -20,10 +20,24 @@ def index(request):
     transactions = (
         Transaction.objects
         .filter(Q(buyer=user) | Q(seller=user) | Q(user=user))
-        .select_related('from_currency', 'to_currency', 'buyer', 'seller')
+        .select_related('from_currency', 'to_currency', 'buyer', 'seller', 'deal')
         .order_by('-created_at')
     )
-    return render(request, 'transactions/index.html', {'transactions': transactions})
+    
+    # Get filter type from query parameter
+    txn_type_filter = request.GET.get('type', 'all')
+    
+    if txn_type_filter != 'all':
+        if txn_type_filter == 'deal_created':
+            # Deal Created transactions are exchange type with a deal ID
+            transactions = transactions.filter(type='exchange', deal__isnull=False)
+        else:
+            transactions = transactions.filter(type=txn_type_filter)
+    
+    return render(request, 'transactions/index.html', {
+        'transactions': transactions,
+        'current_filter': txn_type_filter
+    })
 
 
 @login_required

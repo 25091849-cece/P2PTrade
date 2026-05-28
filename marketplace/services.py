@@ -26,10 +26,14 @@ class DealService:
 
     @staticmethod
     def create_deal(seller: User, from_currency: Currency, to_currency: Currency,
-                   amount: Decimal, rate: Decimal, trend: str) -> Deal:
+                   amount: Decimal, rate: Decimal, trend: str, duration_hours: int = 48) -> Deal:
         """Create a new deal offering currency exchange."""
         if amount <= 0 or rate <= 0:
             raise InvalidTransactionError("Amount and rate must be positive.")
+
+        # Validate duration
+        if duration_hours not in [1, 6, 12, 24, 48]:
+            raise InvalidTransactionError("Duration must be 1, 6, 12, 24, or 48 hours")
 
         deal = Deal.objects.create(
             seller=seller,
@@ -39,7 +43,7 @@ class DealService:
             rate=rate,
             trend=trend,
             status='active',
-            expires_at=timezone.now() + timezone.timedelta(hours=48)
+            expires_at=timezone.now() + timezone.timedelta(hours=duration_hours)
         )
 
         # Create offer_created transaction record

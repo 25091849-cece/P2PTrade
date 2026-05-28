@@ -26,11 +26,11 @@
   {% if transactions %}
   <div class="txn-filter-tabs">
     <div class="txn-filter-indicator"></div>
-    <button class="txn-filter-tab active" data-filter="all">All</button>
-    <button class="txn-filter-tab" data-filter="completed">Completed</button>
-    <button class="txn-filter-tab" data-filter="pending">Pending</button>
-    <button class="txn-filter-tab" data-filter="failed">Failed</button>
-    <button class="txn-filter-tab" data-filter="dispute_raised">Dispute Raised</button>
+    <a href="?type=all" class="txn-filter-tab {% if current_filter == 'all' %}active{% endif %}">All</a>
+    <a href="?type=exchange" class="txn-filter-tab {% if current_filter == 'exchange' %}active{% endif %}">Exchange</a>
+    <a href="?type=deposit" class="txn-filter-tab {% if current_filter == 'deposit' %}active{% endif %}">Deposit</a>
+    <a href="?type=withdrawal" class="txn-filter-tab {% if current_filter == 'withdrawal' %}active{% endif %}">Withdrawal</a>
+    <a href="?type=deal_created" class="txn-filter-tab {% if current_filter == 'deal_created' %}active{% endif %}">Deal Created</a>
   </div>
 
   <div class="txn-table-wrapper">
@@ -52,7 +52,13 @@
         <tr class="txn-row" data-status="{{ txn.status }}" data-id="{{ txn.id }}">
           <td class="txn-td-id">#{{ txn.id }}</td>
           <td class="txn-td">
-            <span class="activity-type">{{ txn.type }}</span>
+            <span class="activity-type">
+              {% if txn.deal and txn.type == 'exchange' %}
+                Deal Created
+              {% else %}
+                {{ txn.type|title }}
+              {% endif %}
+            </span>
           </td>
           <td class="txn-td-pair">
             {{ txn.from_currency.code }} → {{ txn.to_currency.code }}

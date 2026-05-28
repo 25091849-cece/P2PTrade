@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Deal Created | P2PTrade{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-2xl">
+    <!-- Success Card -->
+    <div class="bg-p2p-card border border-p2p-border rounded-3xl p-8 md:p-12 text-center">
+      <!-- Success Checkmark Animation -->
+      <div class="flex justify-center mb-8">
+        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center animate-scale-in shadow-lg">
+          <svg class="w-12 h-12 md:w-16 md:h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-white mb-3">Deal Created!</h1>
+      <p class="text-p2p-muted text-lg mb-10">Your exchange offer has been successfully listed on the marketplace.</p>
+
+      <!-- Deal Details Card -->
+      <div class="bg-p2p-bg border border-p2p-border rounded-2xl p-6 md:p-8 mb-10 text-left">
+        <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+          <svg class="w-5 h-5 text-p2p-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Deal Details
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Currency Pair -->
+          <div class="md:col-span-2">
+            <div class="p-4 bg-p2p-border/30 rounded-xl">
+              <p class="text-p2p-muted text-sm mb-2">Currency Pair</p>
+              <div class="flex items-center justify-center gap-4">
+                <span class="font-display text-2xl font-bold text-white">{{ deal.from_currency.code }}</span>
+                <svg class="w-6 h-6 text-p2p-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+                <span class="font-display text-2xl font-bold text-p2p-accent">{{ deal.to_currency.code }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- You Offer -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">You Offer</p>
+            <p class="text-white font-semibold text-xl">{{ deal.amount|floatformat:2 }} <span class="text-p2p-muted text-sm">{{ deal.from_currency.code }}</span></p>
+          </div>
+
+          <!-- Exchange Rate -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Exchange Rate</p>
+            <p class="text-white font-semibold text-xl">{{ deal.rate|floatformat:4 }} <span class="text-p2p-muted text-sm">{{ deal.to_currency.code }}/{{ deal.from_currency.code }}</span></p>
+          </div>
+
+          <!-- Buyer Receives -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Buyer Receives</p>
+            <p class="text-green-400 font-semibold text-xl">{{ receive_amount|floatformat:2 }} <span class="text-p2p-muted text-sm">{{ deal.to_currency.code }}</span></p>
+          </div>
+
+          <!-- Valid Duration -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Valid For</p>
+            <p class="text-white font-semibold text-xl">{{ duration_hours }} <span class="text-p2p-muted text-sm">{% if duration_hours == 1 %}hour{% else %}hours{% endif %}</span></p>
+          </div>
+
+          <!-- Market Trend -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Market Trend</p>
+            <div class="flex items-center gap-2">
+              {% if deal.trend == 'up' %}
+                <span class="text-green-400 text-2xl">↑</span>
+                <p class="text-green-400 font-semibold">Upward</p>
+              {% else %}
+                <span class="text-red-400 text-2xl">↓</span>
+                <p class="text-red-400 font-semibold">Downward</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Deal ID -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Deal ID</p>
+            <p class="text-white font-mono font-semibold">#{{ deal.id }}</p>
+          </div>
+
+          <!-- Expires -->
+          <div>
+            <p class="text-p2p-muted text-sm mb-2">Expires At</p>
+            <p class="text-white font-semibold">{{ deal.expires_at|date:"M d, H:i" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Information Box -->
+      <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-10 text-left">
+        <div class="flex gap-3">
+          <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div>
+            <p class="text-blue-200 font-semibold mb-1">What Happens Next?</p>
+            <p class="text-blue-200 text-sm">Your deal is now live on the marketplace. Other users can accept it at any time. When someone accepts your offer, you'll receive a notification and can proceed with the payment verification.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wallet Notice -->
+      <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-10 text-left">
+        <div class="flex gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div>
+            <p class="text-amber-200 font-semibold mb-1">Balance Reserved</p>
+            <p class="text-amber-200 text-sm">{{ deal.amount|floatformat:2 }} {{ deal.from_currency.code }} has been reserved in your wallet for this deal. The amount will be locked until the deal is accepted or expires.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="{% url 'marketplace:index' %}" class="flex items-center justify-center gap-2 bg-p2p-accent text-p2p-bg font-semibold px-6 py-3 rounded-xl hover:bg-amber-400 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+          View Marketplace
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="flex items-center justify-center gap-2 bg-p2p-border text-gray-300 font-semibold px-6 py-3 rounded-xl hover:bg-p2p-border/80 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4v4"/>
+          </svg>
+          Go to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="mt-8 bg-p2p-card border border-p2p-border rounded-2xl p-6 text-center">
+      <p class="text-p2p-muted mb-4">Need help? You can manage your deals from your dashboard or contact support.</p>
+      <a href="{% url 'transactions:index' %}" class="inline-flex items-center gap-2 text-p2p-accent hover:text-amber-400 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        View Transaction History
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes scaleIn {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+</style>
+{% endblock %}
+
