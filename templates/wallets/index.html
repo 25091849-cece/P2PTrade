@@ -35,7 +35,7 @@
               </svg>
               <span>Deposit</span>
             </a>
-            <a href="#" class="wallet-action wallet-action-withdraw" aria-label="Withdraw {{ card.currency_code }}">
+            <a href="{% url 'wallets:withdraw' %}?currency={{ card.currency_code }}" class="wallet-action wallet-action-withdraw" aria-label="Withdraw {{ card.currency_code }}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                 <path d="M21 3 10 14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="m21 3-7 18-4-7-7-4 18-7Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
