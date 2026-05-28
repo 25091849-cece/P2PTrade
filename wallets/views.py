@@ -1,8 +1,12 @@
-from decimal import Decimal
+import random
+import string
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.text import get_valid_filename
 from django.utils import timezone
 
 from .models import Wallet
@@ -13,6 +17,7 @@ WALLET_LOCK_MINUTES = 15
 WALLET_ATTEMPTS_SESSION_KEY = 'wallet_failed_attempts'
 WALLET_LOCKED_UNTIL_SESSION_KEY = 'wallet_locked_until'
 WALLET_VERIFIED_SESSION_KEY = 'wallet_verified'
+DEPOSIT_TOP_UP_SESSION_KEY = 'wallet_deposit_top_up'
 
 CURRENCY_META = {
     'MYR': {'accent': 'wallet-accent-myr', 'order': 1},
@@ -29,6 +34,34 @@ CURRENCY_META = {
 }
 
 DEPOSIT_CURRENCIES = tuple(CURRENCY_META.keys())
+
+CURRENCY_SYMBOLS = {
+    'MYR': 'RM',
+    'USD': '$',
+    'EUR': 'EUR',
+    'JPY': 'JPY',
+    'GBP': 'GBP',
+    'AUD': 'AUD',
+    'CAD': 'CAD',
+    'CHF': 'CHF',
+    'CNY': 'CNY',
+    'HKD': 'HKD',
+    'NZD': 'NZD',
+}
+
+DEPOSIT_BANK_ACCOUNTS = {
+    'MYR': {'bank': 'Maybank', 'account_name': 'P2PTrade Malaysia Sdn Bhd', 'account_number': '5142 8891 0092'},
+    'USD': {'bank': 'Citi Bank', 'account_name': 'P2PTrade Global Ltd', 'account_number': '8821 0045 7710'},
+    'EUR': {'bank': 'HSBC Europe', 'account_name': 'P2PTrade Global Ltd', 'account_number': 'EU91 4000 6622 1098'},
+    'JPY': {'bank': 'MUFG Bank', 'account_name': 'P2PTrade Global Ltd', 'account_number': '0198 5520 7311'},
+    'GBP': {'bank': 'Barclays', 'account_name': 'P2PTrade Global Ltd', 'account_number': 'GB24 BARC 2048 8822 7100'},
+    'AUD': {'bank': 'ANZ Bank', 'account_name': 'P2PTrade Global Ltd', 'account_number': '082-991 4410 8221'},
+    'CAD': {'bank': 'RBC Bank', 'account_name': 'P2PTrade Global Ltd', 'account_number': '003 711 8802551'},
+    'CHF': {'bank': 'UBS Switzerland', 'account_name': 'P2PTrade Global Ltd', 'account_number': 'CH93 0076 2011 6238'},
+    'CNY': {'bank': 'Bank of China', 'account_name': 'P2PTrade Global Ltd', 'account_number': '6222 8891 4400 7188'},
+    'HKD': {'bank': 'HSBC Hong Kong', 'account_name': 'P2PTrade Global Ltd', 'account_number': '128-882110-838'},
+    'NZD': {'bank': 'ANZ New Zealand', 'account_name': 'P2PTrade Global Ltd', 'account_number': '01-1822-0118481-00'},
+}
 
 FALLBACK_BALANCES = [
     {'currency_name': 'Malaysian Ringgit', 'currency_code': 'MYR', 'amount': Decimal('0.00')},
@@ -106,6 +139,33 @@ def _render_wallet_verification(request, wallet=None, **context):
         'locked_minutes': locked_minutes,
         **context,
     })
+
+
+def _format_deposit_amount(amount, currency):
+    symbol = CURRENCY_SYMBOLS.get(currency, currency)
+    if symbol in {'$', 'RM'}:
+        return f'{symbol} {amount:,.2f}'
+    return f'{amount:,.2f} {symbol}'
+
+
+def _generate_top_up_reference():
+    timestamp = timezone.now().strftime('%y%m%d%H%M%S')
+    suffix = ''.join(random.choices(string.digits, k=4))
+    return f'TOP{timestamp}{suffix}'
+
+
+def _build_top_up_context(top_up, **extra):
+    amount = Decimal(top_up['amount'])
+    currency = top_up['currency']
+    return {
+        'amount': amount,
+        'currency': currency,
+        'amount_display': _format_deposit_amount(amount, currency),
+        'receive_display': f'{amount:,.2f} {currency}',
+        'reference': top_up['reference'],
+        'bank_account': DEPOSIT_BANK_ACCOUNTS[currency],
+        **extra,
+    }
 
 
 @login_required
@@ -194,10 +254,76 @@ def deposit(request):
     if selected_currency not in DEPOSIT_CURRENCIES:
         selected_currency = 'MYR'
 
+    amount_value = ''
+    error_message = ''
+
+    if request.method == 'POST':
+        selected_currency = request.POST.get('currency', 'MYR').upper()
+        amount_value = request.POST.get('amount', '').strip()
+
+        if selected_currency not in DEPOSIT_CURRENCIES:
+            error_message = 'Please choose a supported deposit currency.'
+            selected_currency = 'MYR'
+        else:
+            try:
+                amount = Decimal(amount_value).quantize(Decimal('0.01'))
+                if amount <= 0:
+                    raise InvalidOperation
+            except (InvalidOperation, ValueError):
+                error_message = 'Please enter a valid deposit amount.'
+            else:
+                request.session[DEPOSIT_TOP_UP_SESSION_KEY] = {
+                    'currency': selected_currency,
+                    'amount': str(amount),
+                    'reference': _generate_top_up_reference(),
+                }
+                return redirect('wallets:top_up')
+
     return render(request, 'wallets/deposit.html', {
         'currencies': DEPOSIT_CURRENCIES,
         'selected_currency': selected_currency,
+        'amount_value': amount_value,
+        'error_message': error_message,
     })
+
+
+@login_required
+def top_up(request):
+    if not request.session.get(WALLET_VERIFIED_SESSION_KEY):
+        return redirect('wallets:index')
+
+    top_up_details = request.session.get(DEPOSIT_TOP_UP_SESSION_KEY)
+    if not top_up_details:
+        return redirect('wallets:deposit')
+
+    if request.method == 'POST':
+        proof = request.FILES.get('payment_proof')
+        confirmed = request.POST.get('confirm_transfer') == 'on'
+
+        if not proof:
+            return render(request, 'wallets/top_up.html', _build_top_up_context(
+                top_up_details,
+                error_message='Please upload your payment proof.',
+            ))
+
+        if not confirmed:
+            return render(request, 'wallets/top_up.html', _build_top_up_context(
+                top_up_details,
+                error_message='Please confirm that you have completed the transfer.',
+            ))
+
+        safe_name = get_valid_filename(proof.name)
+        proof_path = default_storage.save(
+            f'wallet_deposits/user_{request.user.id}/{top_up_details["reference"]}_{safe_name}',
+            proof,
+        )
+        top_up_details['proof_path'] = proof_path
+        top_up_details['submitted_at'] = timezone.now().isoformat()
+        request.session[DEPOSIT_TOP_UP_SESSION_KEY] = top_up_details
+
+        return redirect('transactions:index')
+
+    return render(request, 'wallets/top_up.html', _build_top_up_context(top_up_details))
 
 
 def _is_entering_wallet_from_other_module(request):
