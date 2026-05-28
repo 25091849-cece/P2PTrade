@@ -1,0 +1,66 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'wallets/css/wallets.css' %}">
+{% endblock %}
+
+{% block dashboard_main %}
+  <section class="wallet-verify-page" aria-labelledby="wallet-verify-title">
+    <div class="wallet-verify-card">
+      <div class="wallet-lock-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M6 10h12a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 6 10Z" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h1 id="wallet-verify-title" class="wallet-verify-title">Wallet Verification</h1>
+      <p class="wallet-verify-subtitle">Please enter your password to access your wallet</p>
+
+      {% if is_locked %}
+        <div class="wallet-verify-alert wallet-verify-alert-danger" role="alert">
+          Account temporarily locked. Please try again in {{ locked_minutes }} minutes.
+        </div>
+      {% elif attempts_remaining %}
+        <div class="wallet-verify-alert wallet-verify-alert-warning" role="alert">
+          <div>Incorrect password. {{ attempts_remaining }} attempts remaining.</div>
+          <div class="wallet-verify-alert-note">Warning: Account will be locked after {{ attempts_remaining }} more failed attempts</div>
+        </div>
+      {% endif %}
+
+      <form method="post" class="wallet-verify-form" novalidate>
+        {% csrf_token %}
+        <label for="wallet-password" class="wallet-verify-label">Password</label>
+        <div class="wallet-password-field">
+          <input id="wallet-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required autofocus {% if is_locked %}disabled{% endif %}>
+          <button type="button" class="wallet-password-toggle" aria-label="Show password" aria-pressed="false" {% if is_locked %}disabled{% endif %}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke-width="1.8"/>
+            </svg>
+          </button>
+        </div>
+
+        <button type="submit" class="wallet-verify-submit" {% if is_locked %}disabled{% endif %}>Verify &amp; Access Wallet</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    const passwordInput = document.getElementById('wallet-password');
+    const passwordToggle = document.querySelector('.wallet-password-toggle');
+
+    if (passwordInput && passwordToggle) {
+      passwordToggle.addEventListener('click', () => {
+        const showPassword = passwordInput.type === 'password';
+        passwordInput.type = showPassword ? 'text' : 'password';
+        passwordToggle.setAttribute('aria-pressed', showPassword ? 'true' : 'false');
+        passwordToggle.setAttribute('aria-label', showPassword ? 'Hide password' : 'Show password');
+      });
+    }
+  </script>
+{% endblock %}
