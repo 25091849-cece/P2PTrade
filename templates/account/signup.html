@@ -14,7 +14,7 @@
       <h2>Create Account</h2>
       <p class="subtitle">Start trading currencies globally</p>
 
-      <form class="auth-form" action="{% url 'signup' %}" method="post">
+      <form class="auth-form" action="{% url 'accounts:signup' %}" method="post">
         {% csrf_token %}
         {% if error %}
           <div class="form-error" style="color:#b91c1c;margin-bottom:8px">{{ error }}</div>
@@ -35,7 +35,7 @@
         </button>
       </form>
 
-      <p class="signup-note">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+      <p class="signup-note">Already have an account? <a href="{% url 'accounts:login' %}">Sign in</a></p>
     </section>
 
     <section class="signup-hero flex-1 w-full max-w-[560px] lg:pl-10" aria-label="P2PTrade benefits">

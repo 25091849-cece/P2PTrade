@@ -5,22 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/accounts/templatetags/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/accounts/templatetags/url_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/marketplace/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/marketplace/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/transactions/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/wallets/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transactions/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transactions/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transactions/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wallets/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2PTrade/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2PTrade/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/marketplace/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/marketplace/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wallets/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wallets/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/dashboard.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +21,18 @@
   <component name="CopilotUserSelectedChatMode">
     <option name="chatModeId" value="Agent" />
   </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="agent-panel" value="Claude Haiku 4.5" />
+      <entry key="chat-panel" value="Claude Haiku 4.5" />
+    </selectedModels>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="pr-10" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -77,17 +74,25 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
+    "django.template.preview.state": "SHOW_EDITOR",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Asus/Documents/GitHub/P2PTrade/templates/admin/management",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "npm.css:build.executor": "Run",
+    "npm.css:watch.executor": "Run",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.python manage.py runserver">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Asus\Documents\GitHub\P2PTrade\templates\admin\management" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Django Server.P2PTrade">
     <configuration name="python manage.py migrate" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="P2PTrade" />
       <option name="ENV_FILES" value="" />
@@ -186,8 +191,30 @@
       <option name="customRunCommand" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="css:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="css:build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="css:watch" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="css:watch" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.css:build" />
+        <item itemvalue="npm.css:watch" />
         <item itemvalue="Python.python manage.py runserver" />
         <item itemvalue="Python.python manage.py migrate" />
         <item itemvalue="Python.python manage.py showmigrations" />
@@ -215,16 +242,28 @@
       <workItem from="1777892671400" duration="46000" />
       <workItem from="1778149320923" duration="2639000" />
       <workItem from="1778386207197" duration="6124000" />
+      <workItem from="1778987966882" duration="2371000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_migrate.coverage" NAME="python manage.py migrate Coverage Results" MODIFIED="1778388827740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_showmigrations.coverage" NAME="python manage.py showmigrations Coverage Results" MODIFIED="1778387648809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778392305638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/P2PTrade$python_manage_py_runserver.coverage" NAME="python manage.py runserver Coverage Results" MODIFIED="1778598120050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

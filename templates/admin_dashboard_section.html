@@ -1,0 +1,138 @@
+<div class="dashboard-header admin-dashboard-header">
+  <h1>Admin Dashboard</h1>
+  <p>Platform overview and statistics</p>
+</div>
+
+<div class="stats-grid admin-stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon active-trades">👥</div>
+      <div class="stat-change"><span class="trend-up">↗</span> 8</div>
+    </div>
+    <div class="stat-label">Total Users</div>
+    <div class="stat-value">8</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon monthly-profit">📈</div>
+      <div class="stat-change"><span class="trend-up">↗</span> 5</div>
+    </div>
+    <div class="stat-label">Total Transactions</div>
+    <div class="stat-value">7</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon total-balance">⚠️</div>
+      <div class="stat-change stat-change-warning">Active</div>
+    </div>
+    <div class="stat-label">Pending Disputes</div>
+    <div class="stat-value">2</div>
+  </div>
+</div>
+
+<div class="dashboard-content admin-content-grid">
+  <section class="content-section admin-panel-card admin-health-panel">
+    <div class="section-header">
+      <h3 class="section-title admin-section-title">Platform Health</h3>
+      <span class="section-icon">✨</span>
+    </div>
+
+    <div class="health-list">
+      <div class="health-item">
+        <span class="health-label">Active Deals</span>
+        <span class="health-value">5</span>
+      </div>
+      <div class="health-item">
+        <span class="health-label">Active Users</span>
+        <span class="health-value">8</span>
+      </div>
+      <div class="health-item">
+        <span class="health-label">Resolved Disputes</span>
+        <span class="health-value health-value-good">0</span>
+      </div>
+      <div class="health-item">
+        <span class="health-label">Pending Disputes</span>
+        <span class="health-value health-value-warning">2</span>
+      </div>
+    </div>
+
+    <a href="{% url 'admin:index' %}" class="view-marketplace-btn admin-panel-btn">Go to Admin Panel</a>
+  </section>
+
+  <section class="content-section admin-panel-card recent-activity-section admin-recent-panel">
+    <div class="section-header">
+      <h3 class="section-title admin-section-title">Recent Activity</h3>
+      <span class="section-icon">🗂️</span>
+    </div>
+
+    <div class="admin-recent-list">
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-blue">↗</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">PURCHASE - kimi</div>
+          <div class="admin-recent-meta">MYR → MYR</div>
+        </div>
+        <div class="admin-recent-time">2026-04-14 14:45:07</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-blue">↗</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">OFFER_CREATED - lando norris</div>
+          <div class="admin-recent-meta">MYR → CNY</div>
+        </div>
+        <div class="admin-recent-time">2026-04-16 14:44:09</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-blue">↗</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">OFFER_CREATED - xinyee</div>
+          <div class="admin-recent-meta">MYR → AUD</div>
+        </div>
+        <div class="admin-recent-time">2026-04-16 14:43:05</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-blue">↗</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">OFFER_CREATED - charles</div>
+          <div class="admin-recent-meta">MYR → GBP</div>
+        </div>
+        <div class="admin-recent-time">2026-04-16 14:42:19</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-blue">↗</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">OFFER_CREATED - george</div>
+          <div class="admin-recent-meta">MYR → CHF</div>
+        </div>
+        <div class="admin-recent-time">2026-04-16 14:41:38</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-warning">⚠</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">Dispute #1 - Buyer Complaint</div>
+          <div class="admin-recent-meta">USD → MYR · RM 4,500</div>
+        </div>
+        <div class="admin-recent-status admin-status-pending">pending</div>
+      </div>
+
+      <div class="admin-recent-item">
+        <div class="admin-recent-icon admin-icon-warning">⚠</div>
+        <div class="admin-recent-body">
+          <div class="admin-recent-title">Dispute #2 - Seller Complaint</div>
+          <div class="admin-recent-meta">EUR → MYR · RM 2,460</div>
+        </div>
+        <div class="admin-recent-status admin-status-review">under_review</div>
+      </div>
+    </div>
+
+    <a href="{% url 'admin:index' %}" class="view-all-transactions-btn admin-reports-btn">View All Reports</a>
+  </section>
+</div>
+

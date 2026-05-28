@@ -6,7 +6,8 @@ try:
     admin_user = User.objects.create_superuser(
         username='admin@p2ptrade.com',
         email='admin@p2ptrade.com',
-        password='Admin@123456'
+            password='Admin@123456',
+            role='admin'
     )
     print(f"[OK] Admin user created: {admin_user.email}")
 except Exception as e:

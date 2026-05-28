@@ -61,27 +61,20 @@ class TransactionInline(admin.TabularInline):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_type_badge', 'get_party', 'amount', 'from_currency', 'to_currency', 'status_badge', 'created_at')
+    list_display = ('id', 'get_type_badge', 'get_buyer', 'get_seller', 'get_user', 'get_buyer_pays', 'get_buyer_gets', 'status_badge', 'created_at')
     list_filter = ('type', 'status', 'created_at')
     search_fields = ('buyer__email', 'seller__email', 'user__email', 'payment_reference')
-    readonly_fields = ('id', 'timestamp', 'created_at', 'completed_at', 'proof_of_payment_preview')
+    readonly_fields = ('id', 'received_amount', 'timestamp', 'created_at', 'completed_at', 'proof_of_payment_preview')
 
     fieldsets = (
         ('Parties', {
             'fields': ('buyer', 'seller', 'user')
         }),
-        ('Deal Reference', {
-            'fields': ('deal',)
-        }),
         ('Currencies & Amount', {
             'fields': ('from_currency', 'to_currency', 'amount', 'received_amount', 'rate')
         }),
         ('Status', {
-            'fields': ('type', 'status', 'tx_hash')
-        }),
-        ('Payment', {
-            'fields': ('payment_reference', 'proof_of_payment_preview'),
-            'classes': ('collapse',)
+            'fields': ('type', 'status')
         }),
         ('Dates', {
             'fields': ('timestamp', 'created_at', 'completed_at'),
@@ -91,12 +84,9 @@ class TransactionAdmin(admin.ModelAdmin):
 
     def get_type_badge(self, obj):
         colors = {
-            'purchase': 'blue',
-            'sale': 'green',
-            'exchange': 'purple',
-            'deposit': 'orange',
-            'withdrawal': 'red',
-            'offer_created': 'gray'
+            'deposit': 'blue',
+            'withdrawal': 'purple',
+            'exchange': 'green',
         }
         color = colors.get(obj.type, 'gray')
         return format_html(
@@ -107,26 +97,39 @@ class TransactionAdmin(admin.ModelAdmin):
 
     get_type_badge.short_description = 'Type'
 
-    def get_party(self, obj):
-        if obj.buyer and obj.seller:
-            return f"{obj.buyer.email} ↔ {obj.seller.email}"
-        elif obj.buyer:
-            return f"Buy: {obj.buyer.email}"
-        elif obj.seller:
-            return f"Sell: {obj.seller.email}"
-        elif obj.user:
-            return obj.user.email
-        return "N/A"
+    def get_buyer(self, obj):
+        return obj.buyer.email if obj.buyer else '—'
 
-    get_party.short_description = 'Party/Parties'
+    get_buyer.short_description = 'Buyer'
+
+    def get_seller(self, obj):
+        return obj.seller.email if obj.seller else '—'
+
+    get_seller.short_description = 'Seller'
+
+    def get_user(self, obj):
+        return obj.user.email if obj.user else '—'
+
+    get_user.short_description = 'User'
+
+    def get_buyer_pays(self, obj):
+        return f"{obj.amount} {obj.from_currency.code}"
+
+    get_buyer_pays.short_description = 'Buyer Pays'
+
+    def get_buyer_gets(self, obj):
+        if obj.received_amount:
+            return f"{obj.received_amount} {obj.to_currency.code}"
+        return f"? {obj.to_currency.code}"
+
+    get_buyer_gets.short_description = 'Buyer Gets'
 
     def status_badge(self, obj):
         colors = {
-            'pending': 'blue',
             'completed': 'green',
+            'pending': 'orange',
             'failed': 'red',
-            'cancelled': 'gray',
-            'awaiting_confirmation': 'orange'
+            'dispute_raised': 'purple',
         }
         color = colors.get(obj.status, 'gray')
         return format_html(

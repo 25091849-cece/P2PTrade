@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.db import models
 from django.utils import timezone
 
@@ -49,26 +52,22 @@ class Deal(models.Model):
 
     def get_receive_amount(self):
         """Calculate how much to_currency the buyer will receive."""
-        return self.amount * self.rate
+        return round(self.amount / self.rate, 2)
 
 
 class Transaction(models.Model):
     """Financial transactions between users."""
     TYPE_CHOICES = [
-        ('exchange', 'Exchange'),
         ('deposit', 'Deposit'),
         ('withdrawal', 'Withdrawal'),
-        ('offer_created', 'Offer Created'),
-        ('purchase', 'Purchase'),
-        ('sale', 'Sale'),
+        ('exchange', 'Exchange'),
     ]
 
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
-        ('cancelled', 'Cancelled'),
-        ('awaiting_confirmation', 'Awaiting Confirmation'),
+        ('dispute_raised', 'Dispute Raised'),
     ]
 
     id = models.BigAutoField(primary_key=True)
@@ -135,12 +134,21 @@ class Transaction(models.Model):
         ]
 
     def __str__(self):
-        if self.type in ['purchase', 'sale']:
+        if self.type == 'exchange':
             buyer_name = self.buyer.name or self.buyer.email if self.buyer else 'Unknown'
             seller_name = self.seller.name or self.seller.email if self.seller else 'Unknown'
             return f"TXN #{self.id}: {buyer_name} ↔ {seller_name}"
         user_name = self.user.name or self.user.email if self.user else 'Unknown'
         return f"TXN #{self.id}: {self.type} - {self.amount} {self.from_currency.code}"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.payment_reference:
+            ts = timezone.now().strftime('%Y%m%d%H%M%S')
+            rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            self.payment_reference = f'P2P{ts}{rand}'
+        if self.amount and self.rate:
+            self.received_amount = round(self.amount / self.rate, 2)
+        super().save(*args, **kwargs)
 
     def mark_completed(self):
         """Mark transaction as completed."""
