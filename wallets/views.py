@@ -9,6 +9,8 @@ from django.shortcuts import redirect, render
 from django.utils.text import get_valid_filename
 from django.utils import timezone
 
+from core.models import Currency
+from marketplace.models import Transaction
 from .models import Wallet
 
 
@@ -48,6 +50,20 @@ CURRENCY_SYMBOLS = {
     'CNY': 'CNY',
     'HKD': 'HKD',
     'NZD': 'NZD',
+}
+
+CURRENCY_NAMES = {
+    'MYR': 'Malaysian Ringgit',
+    'USD': 'US Dollar',
+    'EUR': 'Euro',
+    'JPY': 'Japanese Yen',
+    'GBP': 'British Pound',
+    'AUD': 'Australian Dollar',
+    'CAD': 'Canadian Dollar',
+    'CHF': 'Swiss Franc',
+    'CNY': 'Chinese Yuan',
+    'HKD': 'Hong Kong Dollar',
+    'NZD': 'New Zealand Dollar',
 }
 
 DEPOSIT_BANK_ACCOUNTS = {
@@ -167,6 +183,16 @@ def _build_top_up_context(top_up, **extra):
         'bank_account': DEPOSIT_BANK_ACCOUNTS[currency],
         **extra,
     }
+
+
+def _get_or_create_deposit_currency(code):
+    return Currency.objects.get_or_create(
+        code=code,
+        defaults={
+            'name': CURRENCY_NAMES.get(code, code),
+            'symbol': CURRENCY_SYMBOLS.get(code, code),
+        },
+    )[0]
 
 
 @login_required
@@ -349,13 +375,25 @@ def top_up(request):
             ))
 
         safe_name = get_valid_filename(proof.name)
+        amount = Decimal(top_up_details['amount']).quantize(Decimal('0.01'))
+        currency = _get_or_create_deposit_currency(top_up_details['currency'])
         proof_path = default_storage.save(
             f'wallet_deposits/user_{request.user.id}/{top_up_details["reference"]}_{safe_name}',
             proof,
         )
-        top_up_details['proof_path'] = proof_path
-        top_up_details['submitted_at'] = timezone.now().isoformat()
-        request.session[DEPOSIT_TOP_UP_SESSION_KEY] = top_up_details
+        Transaction.objects.create(
+            user=request.user,
+            type='deposit',
+            from_currency=currency,
+            to_currency=currency,
+            amount=amount,
+            received_amount=amount,
+            rate=Decimal('1.00'),
+            status='pending',
+            payment_reference=top_up_details['reference'],
+            proof_of_payment=proof_path,
+        )
+        request.session.pop(DEPOSIT_TOP_UP_SESSION_KEY, None)
 
         return redirect('transactions:index')
 
