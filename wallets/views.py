@@ -28,6 +28,8 @@ CURRENCY_META = {
     'NZD': {'accent': 'wallet-accent-nzd', 'order': 11},
 }
 
+DEPOSIT_CURRENCIES = tuple(CURRENCY_META.keys())
+
 FALLBACK_BALANCES = [
     {'currency_name': 'Malaysian Ringgit', 'currency_code': 'MYR', 'amount': Decimal('0.00')},
     {'currency_name': 'US Dollar', 'currency_code': 'USD', 'amount': Decimal('9000.00')},
@@ -180,6 +182,21 @@ def index(request):
 
     return render(request, 'wallets/index.html', {
         'wallet_cards': wallet_cards,
+    })
+
+
+@login_required
+def deposit(request):
+    if not request.session.get(WALLET_VERIFIED_SESSION_KEY):
+        return redirect('wallets:index')
+
+    selected_currency = request.GET.get('currency', 'MYR').upper()
+    if selected_currency not in DEPOSIT_CURRENCIES:
+        selected_currency = 'MYR'
+
+    return render(request, 'wallets/deposit.html', {
+        'currencies': DEPOSIT_CURRENCIES,
+        'selected_currency': selected_currency,
     })
 
 
