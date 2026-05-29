@@ -160,12 +160,30 @@
   color: #a855f7;
 }
 
-.wallet-accent-aud,
-.wallet-accent-cad,
-.wallet-accent-chf,
-.wallet-accent-cny,
-.wallet-accent-hkd,
-.wallet-accent-nzd,
+.wallet-accent-aud {
+  color: #38bdf8;
+}
+
+.wallet-accent-cad {
+  color: #ef4444;
+}
+
+.wallet-accent-chf {
+  color: #e2e8f0;
+}
+
+.wallet-accent-cny {
+  color: #facc15;
+}
+
+.wallet-accent-hkd {
+  color: #fb7185;
+}
+
+.wallet-accent-nzd {
+  color: #14b8a6;
+}
+
 .wallet-accent-default {
   color: #60a5fa;
 }
