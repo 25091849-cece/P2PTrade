@@ -22,7 +22,7 @@
               <div class="wallet-currency-code">{{ card.currency_code }}</div>
             </div>
             <div class="wallet-currency-mark {{ card.accent_class }}" aria-hidden="true">
-              {% if card.currency_code == 'MYR' %}RM{% elif card.currency_code == 'USD' %}${% elif card.currency_code == 'EUR' %}&euro;{% elif card.currency_code == 'JPY' %}&yen;{% elif card.currency_code == 'GBP' %}&pound;{% else %}{{ card.currency_code }}{% endif %}
+              {{ card.currency_symbol }}
             </div>
           </div>
 

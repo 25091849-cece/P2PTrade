@@ -41,15 +41,15 @@ WITHDRAW_CURRENCIES = DEPOSIT_CURRENCIES
 CURRENCY_SYMBOLS = {
     'MYR': 'RM',
     'USD': '$',
-    'EUR': 'EUR',
-    'JPY': 'JPY',
-    'GBP': 'GBP',
-    'AUD': 'AUD',
-    'CAD': 'CAD',
+    'EUR': '€',
+    'JPY': '¥',
+    'GBP': '£',
+    'AUD': 'A$',
+    'CAD': 'C$',
     'CHF': 'CHF',
-    'CNY': 'CNY',
-    'HKD': 'HKD',
-    'NZD': 'NZD',
+    'CNY': '¥',
+    'HKD': 'HK$',
+    'NZD': 'NZ$',
 }
 
 CURRENCY_NAMES = {
@@ -86,6 +86,12 @@ FALLBACK_BALANCES = [
     {'currency_name': 'Euro', 'currency_code': 'EUR', 'amount': Decimal('8500.00')},
     {'currency_name': 'Japanese Yen', 'currency_code': 'JPY', 'amount': Decimal('1200000.00')},
     {'currency_name': 'British Pound', 'currency_code': 'GBP', 'amount': Decimal('7500.00')},
+    {'currency_name': 'Australian Dollar', 'currency_code': 'AUD', 'amount': Decimal('9800.00')},
+    {'currency_name': 'Canadian Dollar', 'currency_code': 'CAD', 'amount': Decimal('9600.00')},
+    {'currency_name': 'Swiss Franc', 'currency_code': 'CHF', 'amount': Decimal('7200.00')},
+    {'currency_name': 'Chinese Yuan', 'currency_code': 'CNY', 'amount': Decimal('52000.00')},
+    {'currency_name': 'Hong Kong Dollar', 'currency_code': 'HKD', 'amount': Decimal('68000.00')},
+    {'currency_name': 'New Zealand Dollar', 'currency_code': 'NZD', 'amount': Decimal('10400.00')},
 ]
 
 
@@ -96,6 +102,7 @@ def _decorate_balance(balance):
     return {
         **balance,
         'display_amount': f'{amount:,.2f}',
+        'currency_symbol': CURRENCY_SYMBOLS.get(code, code),
         'accent_class': meta['accent'],
         'sort_order': meta['order'],
     }
@@ -160,7 +167,7 @@ def _render_wallet_verification(request, wallet=None, **context):
 
 def _format_deposit_amount(amount, currency):
     symbol = CURRENCY_SYMBOLS.get(currency, currency)
-    if symbol in {'$', 'RM'}:
+    if symbol in {'$', 'RM', '€', '£', '¥', 'A$', 'C$', 'HK$', 'NZ$', 'CHF'}:
         return f'{symbol} {amount:,.2f}'
     return f'{amount:,.2f} {symbol}'
 
