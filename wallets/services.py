@@ -11,6 +11,7 @@ from .models import Wallet, WalletBalance
 
 
 WALLET_CREDIT_PREFIX = 'wallet-credit:'
+WALLET_DEBIT_PREFIX = 'wallet-debit:'
 PROOF_USER_RE = re.compile(r'(?:^|/)wallet_deposits/user_(\d+)(?:/|$)')
 
 
@@ -80,6 +81,35 @@ def credit_completed_deposit(transaction):
 
     Transaction.objects.filter(pk=locked.pk).update(**updates)
     transaction.user = applicant
+    transaction.tx_hash = marker
+    if 'completed_at' in updates:
+        transaction.completed_at = updates['completed_at']
+    return True
+
+
+@db_transaction.atomic
+def debit_completed_withdrawal(transaction):
+    """Subtract a completed withdrawal from the applicant's wallet once."""
+    if transaction.type != 'withdrawal' or transaction.status != 'completed':
+        return False
+
+    locked = Transaction.objects.select_for_update().get(pk=transaction.pk)
+    marker = _wallet_marker(WALLET_DEBIT_PREFIX, locked.pk)
+    if locked.tx_hash == marker:
+        return False
+
+    if locked.user is None:
+        return False
+
+    balance = _get_or_create_balance(locked.user, locked.from_currency)
+    balance = WalletBalance.objects.select_for_update().get(pk=balance.pk)
+    balance.subtract_balance(locked.amount)
+
+    updates = {'tx_hash': marker}
+    if locked.completed_at is None:
+        updates['completed_at'] = timezone.now()
+
+    Transaction.objects.filter(pk=locked.pk).update(**updates)
     transaction.tx_hash = marker
     if 'completed_at' in updates:
         transaction.completed_at = updates['completed_at']
