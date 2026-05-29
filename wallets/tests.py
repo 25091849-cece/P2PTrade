@@ -39,6 +39,40 @@ class WalletVerificationLockTests(TestCase):
         self.assertContains(response, 'Please try again')
 
 
+class WalletInitialBalanceTests(TestCase):
+    def setUp(self):
+        self.myr = Currency.objects.create(
+            code='MYR',
+            name='Malaysian Ringgit',
+            symbol='RM',
+        )
+        self.usd = Currency.objects.create(
+            code='USD',
+            name='US Dollar',
+            symbol='$',
+        )
+        self.eur = Currency.objects.create(
+            code='EUR',
+            name='Euro',
+            symbol='EUR',
+        )
+
+    def test_new_user_gets_configured_initial_balances(self):
+        user = User.objects.create_user(
+            username='initial-balance@example.com',
+            email='initial-balance@example.com',
+            password='password',
+        )
+
+        balances = {
+            balance.currency.code: balance.amount
+            for balance in user.wallet.balances.all()
+        }
+        self.assertEqual(balances['MYR'], Decimal('45000.00'))
+        self.assertEqual(balances['USD'], Decimal('10000.00'))
+        self.assertEqual(balances['EUR'], Decimal('0.00'))
+
+
 class DepositCompletionTests(TestCase):
     def setUp(self):
         self.currency = Currency.objects.create(
@@ -80,7 +114,7 @@ class DepositCompletionTests(TestCase):
         txn.save()
 
         applicant_balance = self.user.wallet.balances.get(currency=self.currency)
-        self.assertEqual(applicant_balance.amount, 125)
+        self.assertEqual(applicant_balance.amount, Decimal('45125.00'))
         txn.refresh_from_db()
         self.assertEqual(txn.user, self.user)
 
@@ -92,7 +126,7 @@ class DepositCompletionTests(TestCase):
         txn.save()
 
         applicant_balance = self.user.wallet.balances.get(currency=self.currency)
-        self.assertEqual(applicant_balance.amount, 125)
+        self.assertEqual(applicant_balance.amount, Decimal('45125.00'))
 
     def test_completed_deposit_uses_proof_applicant_if_admin_changes_user(self):
         txn = self._create_pending_deposit()
@@ -103,8 +137,8 @@ class DepositCompletionTests(TestCase):
 
         applicant_balance = self.user.wallet.balances.get(currency=self.currency)
         miki_balance = self.miki.wallet.balances.get(currency=self.currency)
-        self.assertEqual(applicant_balance.amount, 125)
-        self.assertEqual(miki_balance.amount, 0)
+        self.assertEqual(applicant_balance.amount, Decimal('45125.00'))
+        self.assertEqual(miki_balance.amount, Decimal('45000.00'))
         txn.refresh_from_db()
         self.assertEqual(txn.user, self.user)
 

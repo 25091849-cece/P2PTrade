@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from core.models import Currency
 from marketplace.models import Transaction
-from .models import Wallet
+from .models import Wallet, get_initial_balance
 
 
 MAX_WALLET_ATTEMPTS = 4
@@ -81,17 +81,17 @@ DEPOSIT_BANK_ACCOUNTS = {
 }
 
 FALLBACK_BALANCES = [
-    {'currency_name': 'Malaysian Ringgit', 'currency_code': 'MYR', 'amount': Decimal('0.00')},
-    {'currency_name': 'US Dollar', 'currency_code': 'USD', 'amount': Decimal('9000.00')},
-    {'currency_name': 'Euro', 'currency_code': 'EUR', 'amount': Decimal('8500.00')},
-    {'currency_name': 'Japanese Yen', 'currency_code': 'JPY', 'amount': Decimal('1200000.00')},
-    {'currency_name': 'British Pound', 'currency_code': 'GBP', 'amount': Decimal('7500.00')},
-    {'currency_name': 'Australian Dollar', 'currency_code': 'AUD', 'amount': Decimal('9800.00')},
-    {'currency_name': 'Canadian Dollar', 'currency_code': 'CAD', 'amount': Decimal('9600.00')},
-    {'currency_name': 'Swiss Franc', 'currency_code': 'CHF', 'amount': Decimal('7200.00')},
-    {'currency_name': 'Chinese Yuan', 'currency_code': 'CNY', 'amount': Decimal('52000.00')},
-    {'currency_name': 'Hong Kong Dollar', 'currency_code': 'HKD', 'amount': Decimal('68000.00')},
-    {'currency_name': 'New Zealand Dollar', 'currency_code': 'NZD', 'amount': Decimal('10400.00')},
+    {'currency_name': 'Malaysian Ringgit', 'currency_code': 'MYR', 'amount': get_initial_balance('MYR')},
+    {'currency_name': 'US Dollar', 'currency_code': 'USD', 'amount': get_initial_balance('USD')},
+    {'currency_name': 'Euro', 'currency_code': 'EUR', 'amount': get_initial_balance('EUR')},
+    {'currency_name': 'Japanese Yen', 'currency_code': 'JPY', 'amount': get_initial_balance('JPY')},
+    {'currency_name': 'British Pound', 'currency_code': 'GBP', 'amount': get_initial_balance('GBP')},
+    {'currency_name': 'Australian Dollar', 'currency_code': 'AUD', 'amount': get_initial_balance('AUD')},
+    {'currency_name': 'Canadian Dollar', 'currency_code': 'CAD', 'amount': get_initial_balance('CAD')},
+    {'currency_name': 'Swiss Franc', 'currency_code': 'CHF', 'amount': get_initial_balance('CHF')},
+    {'currency_name': 'Chinese Yuan', 'currency_code': 'CNY', 'amount': get_initial_balance('CNY')},
+    {'currency_name': 'Hong Kong Dollar', 'currency_code': 'HKD', 'amount': get_initial_balance('HKD')},
+    {'currency_name': 'New Zealand Dollar', 'currency_code': 'NZD', 'amount': get_initial_balance('NZD')},
 ]
 
 

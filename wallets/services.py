@@ -1,5 +1,4 @@
 import re
-from decimal import Decimal
 
 from django.db import transaction as db_transaction
 from django.utils import timezone
@@ -7,7 +6,7 @@ from django.utils import timezone
 from accounts.models import User
 from marketplace.models import Transaction
 
-from .models import Wallet, WalletBalance
+from .models import Wallet, WalletBalance, get_initial_balance
 
 
 WALLET_CREDIT_PREFIX = 'wallet-credit:'
@@ -32,7 +31,7 @@ def _get_or_create_balance(user, currency):
     balance, _ = WalletBalance.objects.get_or_create(
         wallet=wallet,
         currency=currency,
-        defaults={'amount': Decimal('0.00')},
+        defaults={'amount': get_initial_balance(currency.code)},
     )
     return balance
 
