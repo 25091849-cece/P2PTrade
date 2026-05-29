@@ -20,10 +20,81 @@
       <p class="wallet-subtitle">Withdraw funds from your wallet balance</p>
     </header>
 
+    {% if show_withdraw_confirmation %}
+      <form class="wallet-deposit-card" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="confirm_withdrawal" value="1">
+        <input type="hidden" name="currency" value="{{ selected_currency }}">
+        <input type="hidden" name="amount" value="{{ amount_value }}">
+
+        {% if error_message %}
+          <div class="wallet-form-error" role="alert">{{ error_message }}</div>
+        {% endif %}
+
+        <div class="wallet-deposit-summary wallet-withdraw-confirmation" aria-label="Withdraw confirmation">
+          <div class="wallet-summary-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path d="M20 12H4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="m10 6-6 6 6 6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Withdraw Confirmation</span>
+          </div>
+          <dl>
+            <div>
+              <dt>Currency</dt>
+              <dd>{{ selected_currency }}</dd>
+            </div>
+            <div>
+              <dt>Amount</dt>
+              <dd>{{ confirmation_amount|floatformat:2 }}</dd>
+            </div>
+            <div>
+              <dt>Available Balance</dt>
+              <dd>{{ selected_balance.display }} {{ selected_currency }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="wallet-form-grid wallet-withdraw-bank-fields">
+          <div class="wallet-form-field">
+            <label for="withdraw-bank-account">Bank Account</label>
+            <input id="withdraw-bank-account" name="bank_account" type="text" autocomplete="off" value="{{ bank_account_value }}" required>
+          </div>
+
+          <div class="wallet-form-field">
+            <label for="withdraw-owner-name">Owner Name</label>
+            <input id="withdraw-owner-name" name="owner_name" type="text" autocomplete="name" value="{{ owner_name_value }}" required>
+          </div>
+        </div>
+
+        <label class="wallet-confirm-row">
+          <input name="confirm_request" type="checkbox" required>
+          <span>I confirm that I want to withdraw <strong>{{ confirmation_amount|floatformat:2 }} {{ selected_currency }}</strong> to the bank account provided above.</span>
+        </label>
+
+        <div class="wallet-form-actions">
+          <a class="wallet-secondary-button" href="{% url 'wallets:withdraw' %}?currency={{ selected_currency }}">Back</a>
+          <button class="wallet-primary-button" type="submit">Confirm Withdraw</button>
+        </div>
+      </form>
+    {% else %}
     <form class="wallet-deposit-card" method="post">
       {% csrf_token %}
+      <div class="wallet-form-alert" id="withdraw-balance-alert" role="alert" {% if not error_title %}hidden{% endif %}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke-width="1.9"/>
+          <path d="M12 7.8v5.1" stroke-width="1.9" stroke-linecap="round"/>
+          <path d="M12 16.4h.01" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <strong id="withdraw-balance-alert-title">{% if error_title %}{{ error_title }}{% else %}Insufficient Balance{% endif %}</strong>
+          <p id="withdraw-balance-alert-message">{{ error_message }}</p>
+        </div>
+      </div>
       {% if error_message %}
-        <div class="wallet-form-error" role="alert">{{ error_message }}</div>
+        {% if not error_title %}
+          <div class="wallet-form-error" role="alert">{{ error_message }}</div>
+        {% endif %}
       {% endif %}
       <div class="wallet-form-grid">
         <div class="wallet-form-field">
@@ -38,6 +109,7 @@
         <div class="wallet-form-field">
           <label for="withdraw-amount">Withdraw Amount</label>
           <input id="withdraw-amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="1,000" value="{{ amount_value }}" required>
+          <p class="wallet-balance-hint" id="withdraw-balance-hint">Available balance: {{ selected_balance.display }} {{ selected_currency }}</p>
         </div>
       </div>
 
@@ -66,25 +138,46 @@
         <button class="wallet-primary-button" type="submit">Withdraw Funds</button>
       </div>
     </form>
+    {% endif %}
   </section>
 {% endblock %}
 
 {% block extra_js %}
-  <script>
-    const currencySelect = document.getElementById('withdraw-currency');
-    const amountInput = document.getElementById('withdraw-amount');
-    const summaryCurrency = document.getElementById('withdraw-summary-currency');
-    const summaryAmount = document.getElementById('withdraw-summary-amount');
+  {% if not show_withdraw_confirmation %}
+    {{ withdraw_balances|json_script:"withdraw-balances-data" }}
+    <script>
+      const currencySelect = document.getElementById('withdraw-currency');
+      const amountInput = document.getElementById('withdraw-amount');
+      const summaryCurrency = document.getElementById('withdraw-summary-currency');
+      const summaryAmount = document.getElementById('withdraw-summary-amount');
+      const balanceHint = document.getElementById('withdraw-balance-hint');
+      const balanceAlert = document.getElementById('withdraw-balance-alert');
+      const balanceAlertMessage = document.getElementById('withdraw-balance-alert-message');
+      const withdrawBalances = JSON.parse(document.getElementById('withdraw-balances-data').textContent);
 
-    function updateWithdrawSummary() {
-      const amount = Number(amountInput.value);
-      summaryCurrency.textContent = currencySelect.value;
-      summaryAmount.textContent = Number.isFinite(amount) && amount > 0
-        ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        : '0.00';
-    }
+      function updateWithdrawSummary() {
+        const amount = Number(amountInput.value);
+        const selectedCurrency = currencySelect.value;
+        const selectedBalance = withdrawBalances[selectedCurrency] || { amount: '0.00', display: '0.00' };
+        const availableAmount = Number(selectedBalance.amount);
 
-    currencySelect.addEventListener('change', updateWithdrawSummary);
-    amountInput.addEventListener('input', updateWithdrawSummary);
-  </script>
+        balanceHint.textContent = `Available balance: ${selectedBalance.display} ${selectedCurrency}`;
+        if (Number.isFinite(amount) && Number.isFinite(availableAmount) && amount > availableAmount) {
+          balanceAlertMessage.textContent = `Insufficient balance. You have ${selectedBalance.display} ${selectedCurrency} available to withdraw.`;
+          balanceAlert.hidden = false;
+        } else {
+          balanceAlert.hidden = true;
+        }
+
+        summaryCurrency.textContent = currencySelect.value;
+        summaryAmount.textContent = Number.isFinite(amount) && amount > 0
+          ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '0.00';
+      }
+
+      currencySelect.addEventListener('change', updateWithdrawSummary);
+      amountInput.addEventListener('input', updateWithdrawSummary);
+      updateWithdrawSummary();
+    </script>
+  {% endif %}
 {% endblock %}

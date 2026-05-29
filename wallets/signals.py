@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from accounts.models import User
 from .models import Wallet, WalletBalance
+from marketplace.models import Transaction
 from core.models import Currency
 import uuid
 
@@ -31,4 +32,12 @@ def create_wallet_for_user(sender, instance, created, **kwargs):
             except Currency.DoesNotExist:
                 # Currency will be created during migration
                 pass
+
+
+@receiver(post_save, sender=Transaction)
+def credit_wallet_for_completed_deposit(sender, instance, **kwargs):
+    """Credit the original deposit applicant when an admin completes it."""
+    from .services import credit_completed_deposit
+
+    credit_completed_deposit(instance)
 

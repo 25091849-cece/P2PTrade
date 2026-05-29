@@ -202,6 +202,25 @@ def _get_or_create_deposit_currency(code):
     )[0]
 
 
+def _get_withdraw_balance_options(user):
+    wallet = _get_wallet_for_user(user)
+    amounts = {code: Decimal('0.00') for code in WITHDRAW_CURRENCIES}
+
+    if wallet:
+        for balance in wallet.balances.all():
+            code = balance.currency.code
+            if code in amounts:
+                amounts[code] = balance.amount
+
+    return {
+        code: {
+            'amount': str(amounts[code].quantize(Decimal('0.01'))),
+            'display': f'{amounts[code]:,.2f}',
+        }
+        for code in WITHDRAW_CURRENCIES
+    }
+
+
 @login_required
 def index(request):
     wallet = _get_wallet_for_user(request.user)
@@ -326,16 +345,26 @@ def withdraw(request):
     if not request.session.get(WALLET_VERIFIED_SESSION_KEY):
         return redirect('wallets:index')
 
+    withdraw_balances = _get_withdraw_balance_options(request.user)
     selected_currency = request.GET.get('currency', 'MYR').upper()
     if selected_currency not in WITHDRAW_CURRENCIES:
         selected_currency = 'MYR'
 
     amount_value = ''
     error_message = ''
+    error_title = ''
+    show_withdraw_confirmation = False
+    confirmation_amount = None
+    bank_account_value = ''
+    owner_name_value = ''
 
     if request.method == 'POST':
         selected_currency = request.POST.get('currency', 'MYR').upper()
         amount_value = request.POST.get('amount', '').strip()
+        is_confirmation_step = request.POST.get('confirm_withdrawal') == '1'
+        bank_account_value = request.POST.get('bank_account', '').strip()
+        owner_name_value = request.POST.get('owner_name', '').strip()
+        is_confirmation = is_confirmation_step and request.POST.get('confirm_request') == 'on'
 
         if selected_currency not in WITHDRAW_CURRENCIES:
             error_message = 'Please choose a supported withdrawal currency.'
@@ -347,12 +376,54 @@ def withdraw(request):
                     raise InvalidOperation
             except (InvalidOperation, ValueError):
                 error_message = 'Please enter a valid withdrawal amount.'
+            else:
+                available_balance = Decimal(withdraw_balances[selected_currency]['amount'])
+                if amount > available_balance:
+                    error_title = 'Insufficient Balance'
+                    error_message = (
+                        f'Insufficient balance. You have {available_balance:,.2f} '
+                        f'{selected_currency} available to withdraw.'
+                    )
+                elif is_confirmation_step:
+                    show_withdraw_confirmation = True
+                    confirmation_amount = amount
+
+                    if not bank_account_value:
+                        error_message = 'Please enter the bank account.'
+                    elif not owner_name_value:
+                        error_message = 'Please enter the owner name.'
+                    elif not is_confirmation:
+                        error_message = 'Please confirm that you want to submit this withdrawal request.'
+                    else:
+                        currency = _get_or_create_deposit_currency(selected_currency)
+                        Transaction.objects.create(
+                            user=request.user,
+                            type='withdrawal',
+                            from_currency=currency,
+                            to_currency=currency,
+                            amount=amount,
+                            received_amount=amount,
+                            rate=Decimal('1.00'),
+                            status='pending',
+                            proof_of_payment=f'Bank Account: {bank_account_value}\nOwner Name: {owner_name_value}',
+                        )
+                        return redirect('transactions:index')
+                else:
+                    show_withdraw_confirmation = True
+                    confirmation_amount = amount
 
     return render(request, 'wallets/withdraw.html', {
         'currencies': WITHDRAW_CURRENCIES,
         'selected_currency': selected_currency,
         'amount_value': amount_value,
         'error_message': error_message,
+        'error_title': error_title,
+        'show_withdraw_confirmation': show_withdraw_confirmation,
+        'confirmation_amount': confirmation_amount,
+        'bank_account_value': bank_account_value,
+        'owner_name_value': owner_name_value,
+        'selected_balance': withdraw_balances[selected_currency],
+        'withdraw_balances': withdraw_balances,
     })
 
 
