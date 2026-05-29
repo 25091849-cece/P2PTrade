@@ -35,9 +35,9 @@ def create_wallet_for_user(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Transaction)
-def credit_wallet_for_completed_deposit(sender, instance, **kwargs):
-    """Credit the original deposit applicant when an admin completes it."""
-    from .services import credit_completed_deposit
+def apply_completed_wallet_transaction(sender, instance, **kwargs):
+    """Apply completed wallet deposits and withdrawals once."""
+    from .services import credit_completed_deposit, debit_completed_withdrawal
 
     credit_completed_deposit(instance)
-
+    debit_completed_withdrawal(instance)

@@ -166,6 +166,8 @@ class WithdrawBalanceTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['show_withdraw_confirmation'])
         self.assertContains(response, 'Withdraw Confirmation')
+        self.assertContains(response, 'Proceed with Wallet Withdrawal')
+        self.assertContains(response, 'Proceed Withdraw')
 
     def test_confirm_withdraw_creates_pending_withdrawal(self):
         balance = self.user.wallet.balances.get(currency=self.currency)
@@ -188,3 +190,51 @@ class WithdrawBalanceTests(TestCase):
         self.assertEqual(transaction.status, 'pending')
         self.assertIn('1234567890', transaction.proof_of_payment)
         self.assertIn('Test Owner', transaction.proof_of_payment)
+
+    def test_completing_withdrawal_debits_requesting_user_wallet(self):
+        balance = self.user.wallet.balances.get(currency=self.currency)
+        balance.amount = Decimal('25.50')
+        balance.save()
+        transaction = Transaction.objects.create(
+            user=self.user,
+            type='withdrawal',
+            from_currency=self.currency,
+            to_currency=self.currency,
+            amount=Decimal('20.00'),
+            received_amount=Decimal('20.00'),
+            rate=Decimal('1.00'),
+            status='pending',
+            proof_of_payment='Bank Account: 1234567890\nOwner Name: Test Owner',
+        )
+
+        transaction.status = 'completed'
+        transaction.save()
+
+        balance.refresh_from_db()
+        self.assertEqual(balance.amount, Decimal('5.50'))
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 'completed')
+        self.assertIsNotNone(transaction.completed_at)
+
+    def test_completed_withdrawal_is_not_debited_twice(self):
+        balance = self.user.wallet.balances.get(currency=self.currency)
+        balance.amount = Decimal('25.50')
+        balance.save()
+        transaction = Transaction.objects.create(
+            user=self.user,
+            type='withdrawal',
+            from_currency=self.currency,
+            to_currency=self.currency,
+            amount=Decimal('20.00'),
+            received_amount=Decimal('20.00'),
+            rate=Decimal('1.00'),
+            status='pending',
+            proof_of_payment='Bank Account: 1234567890\nOwner Name: Test Owner',
+        )
+
+        transaction.status = 'completed'
+        transaction.save()
+        transaction.save()
+
+        balance.refresh_from_db()
+        self.assertEqual(balance.amount, Decimal('5.50'))
