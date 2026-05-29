@@ -1,8 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
 from accounts.models import User
-from .models import Wallet, WalletBalance
+from .models import Wallet, WalletBalance, get_initial_balance
 from marketplace.models import Transaction
 from core.models import Currency
 import uuid
@@ -27,7 +26,7 @@ def create_wallet_for_user(sender, instance, created, **kwargs):
                 WalletBalance.objects.create(
                     wallet=wallet,
                     currency=currency,
-                    amount=0.00
+                    amount=get_initial_balance(currency_code)
                 )
             except Currency.DoesNotExist:
                 # Currency will be created during migration
