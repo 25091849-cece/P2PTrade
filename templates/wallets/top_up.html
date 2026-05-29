@@ -1,0 +1,254 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'wallets/css/wallets.css' %}">
+{% endblock %}
+
+{% block dashboard_main %}
+  <section class="wallet-top-up-page" aria-labelledby="wallet-top-up-title">
+    <header class="wallet-top-up-header">
+      <div class="wallet-top-up-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 8.5h14.5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 12h.01" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 id="wallet-top-up-title" class="wallet-top-up-title">Top Up</h1>
+    </header>
+
+    <div class="wallet-top-up-steps">
+      <h2>Important: Please follow the steps below to top up your account</h2>
+      <ol>
+        <li><span>1</span>Transfer the amount to the bank account below</li>
+        <li><span>2</span>Use the top up reference number as your payment reference</li>
+        <li><span>3</span>Upload your payment proof (bank receipt / screenshot)</li>
+        <li><span>4</span>Confirm the details and submit for review</li>
+      </ol>
+    </div>
+
+    {% if error_message %}
+      <div class="wallet-top-up-alert wallet-top-up-alert-error" role="alert">{{ error_message }}</div>
+    {% endif %}
+
+    {% if submitted %}
+      <div class="wallet-top-up-alert wallet-top-up-alert-success" role="status">
+        Your top up request has been submitted for review.
+      </div>
+    {% endif %}
+
+    <div class="wallet-top-up-panel">
+      <div class="wallet-panel-label">Bank Account</div>
+      <dl class="wallet-bank-details">
+        <div>
+          <dt>Bank</dt>
+          <dd>{{ bank_account.bank }}</dd>
+        </div>
+        <div>
+          <dt>Account Name</dt>
+          <dd>{{ bank_account.account_name }}</dd>
+        </div>
+        <div>
+          <dt>Account Number</dt>
+          <dd>{{ bank_account.account_number }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="wallet-top-up-panel">
+      <div class="wallet-panel-label">Top Up Reference Number</div>
+      <div class="wallet-reference-box">
+        <strong id="top-up-reference">{{ reference }}</strong>
+        <button type="button" class="wallet-copy-button" data-copy-target="top-up-reference">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <rect x="9" y="9" width="10" height="10" rx="2" stroke-width="1.8"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <div class="wallet-top-up-metrics">
+      <div class="wallet-top-up-metric">
+        <span>Amount to Top Up</span>
+        <strong>{{ amount_display }}</strong>
+      </div>
+      <div class="wallet-top-up-metric">
+        <span>You Will Receive (Estimated)</span>
+        <strong>{{ receive_display }}</strong>
+      </div>
+    </div>
+
+    <form id="wallet-top-up-form" class="wallet-top-up-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label class="wallet-upload-title" for="payment-proof">Upload Payment Proof</label>
+      <div class="wallet-upload-box">
+        <div class="wallet-upload-empty">
+          <svg viewBox="0 0 64 40" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M20 34H49a11 11 0 0 0 1.2-21.9A17 17 0 0 0 18.4 15.6 9.5 9.5 0 0 0 20 34Z" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32 31V10m0 0-8 8m8-8 8 8" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Upload bank receipt or payment screenshot</p>
+          <label class="wallet-file-button" for="payment-proof">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path d="M12 3v12m0-12-4 4m4-4 4 4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 15v4h14v-4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Choose File
+          </label>
+        </div>
+        <div class="wallet-upload-success" hidden>
+          <svg class="wallet-upload-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="m7 12 3 3 7-8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12a9 9 0 1 1-5.3-8.2" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <strong>Proof of Payment Uploaded</strong>
+          <img id="payment-proof-preview" alt="Payment proof preview" hidden>
+          <div id="payment-proof-file" class="wallet-upload-file-name" hidden></div>
+          <label class="wallet-change-file" for="payment-proof">Change File</label>
+        </div>
+        <input id="payment-proof" name="payment_proof" type="file" accept="image/*,.pdf" {% if not submitted %}required{% endif %} {% if submitted %}disabled{% endif %}>
+      </div>
+
+      <div class="wallet-top-up-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M12 17v-6m0-4h.01" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="9" stroke-width="1.8"/>
+        </svg>
+        <p>Please make sure you have transferred {{ amount_display }} using the top up reference number <span>{{ reference }}</span>, and the uploaded proof is clear and valid.</p>
+      </div>
+
+      <label class="wallet-confirm-row">
+        <input id="confirm-transfer" name="confirm_transfer" type="checkbox" {% if submitted %}checked disabled{% endif %} required>
+        <span>I confirm that I have transferred {{ amount_display }} to the above account, and used the reference number <strong>{{ reference }}</strong> for this top up.</span>
+      </label>
+
+      <div class="wallet-top-up-actions">
+        <a class="wallet-secondary-button" href="{% url 'wallets:deposit' %}?currency={{ currency }}">Cancel</a>
+        <button id="submit-top-up" class="wallet-primary-button" type="submit" {% if submitted %}disabled{% endif %}>Submit Top Up Request</button>
+      </div>
+    </form>
+
+    <div id="wallet-recharge-modal" class="wallet-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-recharge-title" aria-describedby="wallet-recharge-description" hidden>
+      <div class="wallet-modal-card">
+        <div class="wallet-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="m7 12 3 3 7-8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12a9 9 0 1 1-5.3-8.2" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 id="wallet-recharge-title">Proceed with Wallet Recharge</h2>
+        <p id="wallet-recharge-description">You have confirmed that the payment has been made.<br>Would you like to proceed with completing the wallet recharge?</p>
+        <div class="wallet-modal-actions">
+          <button id="wallet-recharge-cancel" class="wallet-secondary-button" type="button">Cancel</button>
+          <button id="wallet-recharge-proceed" class="wallet-primary-button" type="button">Proceed Recharge</button>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    const fileInput = document.getElementById('payment-proof');
+    const topUpForm = document.getElementById('wallet-top-up-form');
+    const uploadBox = document.querySelector('.wallet-upload-box');
+    const uploadEmpty = document.querySelector('.wallet-upload-empty');
+    const uploadSuccess = document.querySelector('.wallet-upload-success');
+    const previewImage = document.getElementById('payment-proof-preview');
+    const proofFile = document.getElementById('payment-proof-file');
+    const confirmInput = document.getElementById('confirm-transfer');
+    const submitButton = document.getElementById('submit-top-up');
+    const rechargeModal = document.getElementById('wallet-recharge-modal');
+    const rechargeCancel = document.getElementById('wallet-recharge-cancel');
+    const rechargeProceed = document.getElementById('wallet-recharge-proceed');
+    let previewUrl = '';
+    let confirmedSubmit = false;
+
+    function updateSubmitState() {
+      if (!submitButton || submitButton.disabled && submitButton.dataset.locked === 'true') {
+        return;
+      }
+      submitButton.disabled = !(fileInput.files.length && confirmInput.checked);
+    }
+
+    if (submitButton && submitButton.disabled) {
+      submitButton.dataset.locked = 'true';
+    }
+
+    if (fileInput && confirmInput && submitButton && submitButton.dataset.locked !== 'true') {
+      submitButton.disabled = true;
+      fileInput.addEventListener('change', () => {
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+          previewUrl = '';
+        }
+
+        const file = fileInput.files[0];
+        const hasFile = Boolean(file);
+        uploadBox.classList.toggle('wallet-upload-box-complete', hasFile);
+        uploadEmpty.hidden = hasFile;
+        uploadSuccess.hidden = !hasFile;
+
+        if (hasFile && file.type.startsWith('image/')) {
+          previewUrl = URL.createObjectURL(file);
+          previewImage.src = previewUrl;
+          previewImage.hidden = false;
+          proofFile.hidden = true;
+        } else if (hasFile) {
+          previewImage.hidden = true;
+          proofFile.textContent = file.name;
+          proofFile.hidden = false;
+        }
+
+        updateSubmitState();
+      });
+      confirmInput.addEventListener('change', updateSubmitState);
+    }
+
+    if (topUpForm && rechargeModal && rechargeCancel && rechargeProceed) {
+      topUpForm.addEventListener('submit', (event) => {
+        if (confirmedSubmit) {
+          return;
+        }
+        event.preventDefault();
+        if (!topUpForm.reportValidity()) {
+          return;
+        }
+        rechargeModal.hidden = false;
+        rechargeProceed.focus();
+      });
+
+      rechargeCancel.addEventListener('click', () => {
+        rechargeModal.hidden = true;
+        submitButton.focus();
+      });
+
+      rechargeProceed.addEventListener('click', () => {
+        confirmedSubmit = true;
+        rechargeModal.hidden = true;
+        topUpForm.submit();
+      });
+
+      rechargeModal.addEventListener('click', (event) => {
+        if (event.target === rechargeModal) {
+          rechargeModal.hidden = true;
+          submitButton.focus();
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-copy-target]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const target = document.getElementById(button.dataset.copyTarget);
+        if (!target) {
+          return;
+        }
+        await navigator.clipboard.writeText(target.textContent.trim());
+        button.lastChild.textContent = ' Copied';
+      });
+    });
+  </script>
+{% endblock %}

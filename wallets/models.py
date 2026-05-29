@@ -1,5 +1,17 @@
+from decimal import Decimal
+
 from django.db import models
 from django.core.exceptions import ValidationError
+
+
+INITIAL_BALANCES = {
+    'MYR': Decimal('45000.00'),
+    'USD': Decimal('10000.00'),
+}
+
+
+def get_initial_balance(currency_code):
+    return INITIAL_BALANCES.get(currency_code, Decimal('0.00'))
 
 
 class Wallet(models.Model):
@@ -7,6 +19,8 @@ class Wallet(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     user = models.OneToOneField('accounts.User', on_delete=models.CASCADE, related_name='wallet')
     balance_total = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    verification_failed_attempts = models.IntegerField(default=0)
+    verification_locked_until = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
