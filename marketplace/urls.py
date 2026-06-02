@@ -13,8 +13,9 @@ urlpatterns = [
     # Template views
     path('', views.index, name='index'),
     path('create/', views.create_deal, name='create'),
+    path('deals/<int:deal_id>/created/', views.deal_created, name='deal_created'),
     path('deals/<int:deal_id>/accept/', views.accept_deal, name='accept'),
-
+    
     # REST API
     path('api/', include(router.urls)),
 ]

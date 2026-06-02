@@ -31,8 +31,11 @@ class Deal(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
 
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()  # 48 hours from creation
+    expires_at = models.DateTimeField()  # Time until deal expires
     accepted_at = models.DateTimeField(null=True, blank=True)
+    
+    # Track if balance has been reserved for this deal
+    balance_reserved = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'deals'
