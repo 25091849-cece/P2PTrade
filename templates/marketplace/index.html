@@ -1,7 +1,169 @@
-{% extends "dashboard.html" %}
+{% extends 'base.html' %}
 
-{% block dashboard_main %}
-  <h2>Marketplace (placeholder)</h2>
-  <p>This is a placeholder page for the marketplace app. Replace this template in the marketplace app when implementing the real UI.</p>
+{% block title %}Currency Marketplace | P2PTrade{% endblock %}
+
+{% block extra_head %}
+<style>
+  .trend-up { color: #10b981; }
+  .trend-down { color: #ef4444; }
+  .countdown {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="p-8">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="font-display text-4xl font-bold text-white mb-2">Currency Marketplace</h1>
+      <p class="text-p2p-muted">Browse and accept currency exchange deals</p>
+    </div>
+    <a href="{% url 'marketplace:create' %}" class="inline-flex items-center gap-2 bg-p2p-accent text-p2p-bg font-semibold px-5 py-2.5 rounded-xl hover:bg-amber-400 transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Create Deal
+    </a>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6 mb-8">
+    <form method="get" class="flex gap-4">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-300 mb-2">From Currency</label>
+        <select name="from_currency" onchange="this.form.submit()" class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2 text-white focus:outline-none focus:border-p2p-accent">
+          <option value="">All currencies</option>
+          {% for currency in currencies %}
+            <option value="{{ currency.code }}" {% if selected_from == currency.code %}selected{% endif %}>{{ currency.code }} — {{ currency.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-300 mb-2">To Currency</label>
+        <select name="to_currency" onchange="this.form.submit()" class="w-full bg-p2p-bg border border-p2p-border rounded-xl px-3 py-2 text-white focus:outline-none focus:border-p2p-accent">
+          <option value="">All currencies</option>
+          {% for currency in currencies %}
+            <option value="{{ currency.code }}" {% if selected_to == currency.code %}selected{% endif %}>{{ currency.code }} — {{ currency.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex items-end">
+        <a href="{% url 'marketplace:index' %}" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:bg-p2p-border transition">Clear</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Deals Grid -->
+  {% if deals %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for deal in deals %}
+        <div class="bg-p2p-card border border-p2p-border rounded-2xl p-6 hover:border-p2p-accent transition">
+          <!-- Seller Info Header -->
+          <div class="flex items-center gap-3 mb-4 pb-4 border-b border-p2p-border">
+            <div class="w-10 h-10 rounded-full bg-p2p-accent/20 text-p2p-accent flex items-center justify-center font-semibold text-sm">
+              {{ deal.seller_name|default:deal.seller.email|slice:":1"|upper }}
+            </div>
+            <div>
+              <div class="font-semibold text-white">{{ deal.seller_name|default:deal.seller.email }}</div>
+              <div class="text-xs text-p2p-muted">Dealer</div>
+            </div>
+          </div>
+
+          <!-- Currency Pair and Trend -->
+          <div class="flex items-baseline justify-between gap-4 mb-4">
+            <div>
+              <div class="text-p2p-muted text-xs mb-1">Offering</div>
+              <div class="flex items-baseline gap-2">
+                <span class="font-display text-2xl font-bold text-white">{{ deal.from_currency_code }}</span>
+                <span class="text-p2p-muted">→</span>
+                <span class="font-display text-2xl font-bold text-p2p-accent">{{ deal.to_currency_code }}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              {% if deal.trend == 'up' %}
+                <span class="trend-up text-2xl">↑</span>
+              {% else %}
+                <span class="trend-down text-2xl">↓</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Amount -->
+          <div class="mb-4">
+            <div class="text-p2p-muted text-xs mb-1">Amount</div>
+            <div class="text-white font-semibold">{{ deal.amount|floatformat:2 }} {{ deal.from_currency_code }}</div>
+          </div>
+
+          <!-- Exchange Rate -->
+          <div class="mb-6 p-3 bg-p2p-bg rounded-lg">
+            <div class="text-p2p-muted text-xs mb-1">Exchange Rate</div>
+            <div class="text-white font-display text-3xl font-bold">{{ deal.rate|floatformat:4 }}</div>
+            <div class="text-p2p-muted text-xs mt-1">1 {{ deal.from_currency_code }} = {{ deal.rate|floatformat:4 }} {{ deal.to_currency_code }}</div>
+          </div>
+
+          <!-- You Would Receive -->
+          <div class="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+            <div class="text-green-200 text-xs mb-1">You would receive</div>
+            <div class="text-green-400 font-semibold">{{ deal.receive_amount|floatformat:2 }} {{ deal.to_currency_code }}</div>
+          </div>
+
+          <!-- Time Remaining -->
+          <div class="mb-6">
+            <div class="flex items-center gap-2 text-p2p-muted text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="countdown" data-expires="{{ deal.expires_at|date:'c' }}">{{ deal.time_remaining_display }}</span>
+            </div>
+          </div>
+
+          <!-- Accept Button -->
+          <form method="post" action="{% url 'marketplace:accept' deal.id %}" class="w-full">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-p2p-accent text-p2p-bg font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-400 transition">
+              Accept Deal
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bg-p2p-card border border-p2p-border rounded-2xl p-12 text-center">
+      <svg class="w-16 h-16 mx-auto text-p2p-muted mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m0 0l8 4m-8-4v10l8 4m0-10l8-4m0 0v10l-8 4m0-10l-8 4"/></svg>
+      <h3 class="text-xl font-semibold text-white mb-2">No deals available</h3>
+      <p class="text-p2p-muted mb-6">No active deals match your filters. Try adjusting your search or create a new deal.</p>
+      <a href="{% url 'marketplace:create' %}" class="inline-flex items-center gap-2 bg-p2p-accent text-p2p-bg font-semibold px-5 py-2.5 rounded-xl hover:bg-amber-400 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Create Deal
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Countdown Timer Script -->
+<script>
+function updateCountdowns() {
+  const countdowns = document.querySelectorAll('.countdown');
+  countdowns.forEach(el => {
+    const expiresAt = new Date(el.dataset.expires).getTime();
+    const now = new Date().getTime();
+    const remaining = expiresAt - now;
+
+    if (remaining <= 0) {
+      el.textContent = 'Expired';
+      el.parentElement.parentElement.parentElement.querySelector('button').disabled = true;
+      el.parentElement.parentElement.parentElement.querySelector('button').classList.add('opacity-50', 'cursor-not-allowed');
+      return;
+    }
+
+    const hours = Math.floor(remaining / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+
+    el.textContent = `${hours}h ${minutes}m remaining`;
+  });
+}
+
+updateCountdowns();
+setInterval(updateCountdowns, 60000); // Update every minute
+</script>
 {% endblock %}
 

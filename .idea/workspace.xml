@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312d24e2-a306-48b9-8a19-d81591cf0443" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/static/js/marketplace.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/marketplace/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/marketplace/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/marketplace/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/marketplace/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/marketplace/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/marketplace/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/marketplace/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/marketplace/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/marketplace/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/marketplace/create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/marketplace/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/marketplace/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,7 +282,7 @@
       <workItem from="1778987966882" duration="2371000" />
       <workItem from="1779617519271" duration="1138000" />
       <workItem from="1780381875044" duration="1074000" />
-      <workItem from="1780383020629" duration="1180000" />
+      <workItem from="1780383020629" duration="2396000" />
     </task>
     <servers />
   </component>
