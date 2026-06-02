@@ -50,6 +50,19 @@ def _dashboard_profile(user, wallet):
 	)
 
 
+def _format_change_percent(value):
+	if value is None:
+		return '—'
+	arrow = '▲' if value >= 0 else '▼'
+	return f"{arrow} {abs(value):.2f}%"
+
+
+def _change_class(value):
+	if value is None:
+		return 'text-[#9aa6b2]'
+	return 'text-green' if value >= 0 else 'text-red'
+
+
 def _signup_profile(wallet=None):
 	# The old template expected a profile object with starter balances.
 	# Keep those values available so the page renders cleanly after migration.
@@ -206,6 +219,11 @@ def dashboard_page(request):
 
 	# Regular user: keep the original dashboard untouched
 	wallet = _wallet_or_none(request.user)
+	user_display_name = request.user.get_full_name().strip() or getattr(request.user, 'name', '').strip() or request.user.username
+	now = timezone.now()
+	month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+	previous_month_end = month_start - timedelta(days=1)
+	previous_month_start = previous_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 	try:
 		exchange_rates = ExchangeRate.objects.select_related(
 			'from_currency', 'to_currency'
@@ -214,6 +232,26 @@ def dashboard_page(request):
 		).order_by('to_currency__code')[:6]
 	except:
 		exchange_rates = []
+
+	user_transactions = Transaction.objects.filter(
+		Q(buyer=request.user) | Q(seller=request.user) | Q(user=request.user)
+	)
+	current_month_transactions = user_transactions.filter(created_at__gte=month_start)
+	previous_month_transactions = user_transactions.filter(
+		created_at__gte=previous_month_start,
+		created_at__lt=month_start,
+	)
+	current_month_profit = current_month_transactions.filter(
+		status='completed',
+		completed_at__isnull=False,
+	).aggregate(total=Sum('received_amount'))['total'] or Decimal(0)
+	previous_month_profit = previous_month_transactions.filter(
+		status='completed',
+		completed_at__isnull=False,
+	).aggregate(total=Sum('received_amount'))['total'] or Decimal(0)
+	profit_change_percent = None
+	if previous_month_profit:
+		profit_change_percent = float(((current_month_profit - previous_month_profit) / previous_month_profit) * 100)
 
 	recent_transactions = Transaction.objects.filter(
 		Q(buyer=request.user) | Q(seller=request.user) | Q(user=request.user)
@@ -226,7 +264,7 @@ def dashboard_page(request):
 		activity = SimpleNamespace(
 			type=txn.get_type_display() if hasattr(txn, 'get_type_display') else txn.type.upper(),
 			description=f"{txn.from_currency.code} → {txn.to_currency.code}",
-			amount=f"{txn.amount}",
+			amount=f"{txn.amount:,.2f}",
 			timestamp=txn.created_at,
 			status=txn.status,
 		)
@@ -234,7 +272,16 @@ def dashboard_page(request):
 
 	return render(request, 'dashboard.html', {
 		'wallet': wallet,
+		'display_name': user_display_name,
 		'profile': _dashboard_profile(request.user, wallet),
+		'total_balance_change_display': _format_change_percent(None),
+		'total_balance_change_class': _change_class(None),
+		'active_trades_change_display': _format_change_percent(None),
+		'active_trades_change_class': _change_class(None),
+		'monthly_profit_change_display': _format_change_percent(profit_change_percent),
+		'monthly_profit_change_class': _change_class(profit_change_percent),
+		'transactions_this_month': current_month_transactions.count(),
+		'transactions_label': 'This month',
 		'exchange_rates': exchange_rates,
 		'recent_activity': recent_activity,
 		'is_admin_user': False,

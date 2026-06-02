@@ -39,9 +39,9 @@
 
       <div class="user-profile">
         <div class="flex gap-3 items-center">
-          <div class="user-avatar">{{ user.get_full_name|default:user.username|slice:":1"|upper }}</div>
+          <div class="user-avatar">{{ display_name|default:user.get_full_name|default:user.username|slice:":1"|upper }}</div>
           <div>
-            <div class="font-bold">{{ user.get_full_name|default:user.username }}</div>
+            <div class="font-bold">{{ display_name|default:user.get_full_name|default:user.username }}</div>
             <div class="text-xs text-[#9aa6b2]">{{ user.email }}</div>
           </div>
         </div>
@@ -52,7 +52,7 @@
     <main class="main-content">
       {% block dashboard_main %}
       <div class="dashboard-header">
-        <h1 class="text-3xl font-bold mb-2">Welcome back, {{ user.get_full_name|default:user.username }}</h1>
+        <h1 class="text-3xl font-bold mb-2">Welcome back, {{ display_name|default:user.get_full_name|default:user.username }}</h1>
         <p class="text-[#9aa6b2]">Here's what's happening with your account today</p>
       </div>
 
@@ -60,7 +60,7 @@
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-icon total-balance">📁</div>
-            <div class="stat-change">▲ 12.5%</div>
+            <div class="stat-change {{ total_balance_change_class }}">{{ total_balance_change_display }}</div>
           </div>
           <div class="stat-label">Total Balance</div>
           <div class="stat-value">${{ profile.total_balance_usd|floatformat:2 }}</div>
@@ -69,7 +69,7 @@
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-icon active-trades">📊</div>
-            <div class="stat-change">▲ 8.2%</div>
+            <div class="stat-change {{ active_trades_change_class }}">{{ active_trades_change_display }}</div>
           </div>
           <div class="stat-label">Active Trades</div>
           <div class="stat-value">{{ profile.active_trades }}</div>
@@ -78,7 +78,7 @@
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-icon monthly-profit">📈</div>
-            <div class="stat-change">▲ 15.3%</div>
+            <div class="stat-change {{ monthly_profit_change_class }}">{{ monthly_profit_change_display }}</div>
           </div>
           <div class="stat-label">Monthly Profit</div>
           <div class="stat-value">${{ profile.monthly_profit_usd|floatformat:2 }}</div>
@@ -87,10 +87,10 @@
         <div class="stat-card">
           <div class="stat-card-header">
             <div class="stat-icon transactions">⏱️</div>
-            <div style="text-align: right; font-size: 12px; color: #9aa6b2;">This month</div>
+            <div style="text-align: right; font-size: 12px; color: #9aa6b2;">{{ transactions_label }}</div>
           </div>
           <div class="stat-label">Transactions</div>
-          <div class="stat-value">156</div>
+          <div class="stat-value">{{ transactions_this_month }}</div>
         </div>
       </div>
 
@@ -114,29 +114,9 @@
               {% endfor %}
             {% else %}
               <div class="exchange-rate-item">
-                <div class="rate-pair">USD → EUR</div>
-                <div class="rate-value">0.92</div>
-                <div class="rate-change text-green">▲ 1.2%</div>
-              </div>
-              <div class="exchange-rate-item">
-                <div class="rate-pair">USD → GBP</div>
-                <div class="rate-value">0.79</div>
-                <div class="rate-change text-red">▼ 0.5%</div>
-              </div>
-              <div class="exchange-rate-item">
-                <div class="rate-pair">USD → JPY</div>
-                <div class="rate-value">149.85</div>
-                <div class="rate-change text-green">▲ 0.6%</div>
-              </div>
-              <div class="exchange-rate-item">
-                <div class="rate-pair">EUR → GBP</div>
-                <div class="rate-value">0.86</div>
-                <div class="rate-change text-red">▼ 0.3%</div>
-              </div>
-              <div class="exchange-rate-item">
-                <div class="rate-pair">BTC → USD</div>
-                <div class="rate-value">68,428.50</div>
-                <div class="rate-change text-green">▲ 3.4%</div>
+                <div class="rate-pair">No exchange rates available</div>
+                <div class="rate-value">—</div>
+                <div class="rate-change text-[#9aa6b2]">Add exchange rate data to show live values.</div>
               </div>
             {% endif %}
           </div>
@@ -165,28 +145,12 @@
               {% endfor %}
             {% else %}
               <div class="activity-item">
-                <div class="activity-type">EXCHANGE</div>
+                <div class="activity-type">No Activity</div>
                 <div class="activity-details">
-                  <div class="activity-description">USD → EUR</div>
-                  <div class="activity-time">2 hours ago</div>
+                  <div class="activity-description">You have no recent transactions yet.</div>
+                  <div class="activity-time">Recent activity will appear here once transactions are created.</div>
                 </div>
-                <div class="activity-amount">1200</div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-type">DEPOSIT</div>
-                <div class="activity-details">
-                  <div class="activity-description">Deposit USD</div>
-                  <div class="activity-time">1 day ago</div>
-                </div>
-                <div class="activity-amount">5,000</div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-type">EXCHANGE</div>
-                <div class="activity-details">
-                  <div class="activity-description">EUR → GBP</div>
-                  <div class="activity-time">2 days ago</div>
-                </div>
-                <div class="activity-amount">500</div>
+                <div class="activity-amount">—</div>
               </div>
             {% endif %}
           </div>
