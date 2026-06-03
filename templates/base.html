@@ -58,7 +58,7 @@
       </div>
 
       <nav class="flex-1 px-4 space-y-1">
-        {% if request.user.is_authenticated and request.user.is_admin %}
+        {% if is_admin_user %}
           {% include 'partials/sidebar_admin.html' %}
         {% else %}
           {% include 'partials/sidebar_user.html' %}

@@ -1,3 +1,4 @@
+import json
 from types import SimpleNamespace
 from urllib.parse import quote_plus
 from decimal import Decimal
@@ -12,9 +13,10 @@ from django.utils import timezone
 from django.db.models import Q, Sum
 
 from accounts.models import User
-from wallets.models import Wallet
+from wallets.models import Wallet, WalletBalance
 from marketplace.models import Deal, Transaction
 from core.models import ExchangeRate
+from disputes.models import Dispute
 
 
 def _wallet_or_none(user):
@@ -66,6 +68,52 @@ def _is_admin_user(user):
 			or getattr(user, 'is_admin', lambda: False)()
 		)
 	)
+
+
+def _admin_dashboard_context():
+	"""Context for the admin dashboard cards + chart."""
+	total_users = User.objects.count()
+	active_users = User.objects.filter(is_active=True).count()
+	total_transactions = Transaction.objects.count()
+	pending_disputes = Dispute.objects.filter(status='pending').count()
+	resolved_disputes = Dispute.objects.filter(status='resolved').count()
+	active_deals = Deal.objects.filter(status='active').count()
+	today = timezone.now().date()
+
+	volume = (
+		Transaction.objects
+		.filter(status='completed')
+		.values('to_currency__code')
+		.annotate(total=Sum('received_amount'))
+		.order_by('-total')[:11]
+	)
+	volume_data = [
+		{'code': r['to_currency__code'], 'volume': float(r['total'] or 0)}
+		for r in volume
+	]
+	if not volume_data:
+		volume_data = [
+			{'code': c, 'volume': v} for c, v in [
+				('USD', 680000), ('EUR', 640000), ('GBP', 625000),
+				('JPY', 490000), ('AUD', 480000), ('CAD', 475000),
+				('CHF', 460000), ('CNY', 455000), ('HKD', 450000),
+				('NZD', 445000), ('MYR', 440000),
+			]
+		]
+
+	return {
+		'stats': {
+			'total_users': total_users,
+			'active_users': active_users,
+			'total_transactions': total_transactions,
+			'pending_disputes': pending_disputes,
+			'resolved_disputes': resolved_disputes,
+			'active_deals': active_deals,
+			'new_users_today': User.objects.filter(created_at__date=today).count(),
+			'new_transactions_today': Transaction.objects.filter(created_at__date=today).count(),
+		},
+		'volume_data': json.dumps(volume_data),
+	}
 
 
 def login_page(request):
@@ -150,10 +198,14 @@ def signup_success(request):
 
 @login_required(login_url='login')
 def dashboard_page(request):
-	wallet = _wallet_or_none(request.user)
 	is_admin_user = _is_admin_user(request.user)
 
-	# Fetch exchange rates (USD-based rates)
+	# Admin: redesigned Figma dashboard (stats + chart + Platform Health)
+	if is_admin_user:
+		return render(request, 'admin_dashboard.html', _admin_dashboard_context())
+
+	# Regular user: keep the original dashboard untouched
+	wallet = _wallet_or_none(request.user)
 	try:
 		exchange_rates = ExchangeRate.objects.select_related(
 			'from_currency', 'to_currency'
@@ -163,14 +215,12 @@ def dashboard_page(request):
 	except:
 		exchange_rates = []
 
-	# Fetch recent transactions (last 5)
 	recent_transactions = Transaction.objects.filter(
 		Q(buyer=request.user) | Q(seller=request.user) | Q(user=request.user)
 	).select_related(
 		'from_currency', 'to_currency', 'buyer', 'seller', 'user'
 	).order_by('-created_at')[:5]
 
-	# Format recent transactions for display
 	recent_activity = []
 	for txn in recent_transactions:
 		activity = SimpleNamespace(
@@ -182,15 +232,13 @@ def dashboard_page(request):
 		)
 		recent_activity.append(activity)
 
-	context = {
+	return render(request, 'dashboard.html', {
 		'wallet': wallet,
 		'profile': _dashboard_profile(request.user, wallet),
 		'exchange_rates': exchange_rates,
 		'recent_activity': recent_activity,
-		'is_admin_user': is_admin_user,
-	}
-	template_name = 'admin_dashboard.html' if is_admin_user else 'dashboard.html'
-	return render(request, template_name, context)
+		'is_admin_user': False,
+	})
 
 
 def logout_view(request):
@@ -199,8 +247,33 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def manage_user(request):
-	"""Admin-only user management page."""
+	"""Admin-only user management page (search + USD/EUR balances + role)."""
 	if not _is_admin_user(request.user):
 		return redirect(reverse('accounts:dashboard'))
-	return render(request, 'admin/management/manage_user.html')
 
+	search = request.GET.get('q', '').strip()
+	qs = User.objects.all().order_by('-created_at')
+	if search:
+		qs = qs.filter(
+			Q(email__icontains=search) | Q(name__icontains=search) | Q(username__icontains=search)
+		)
+
+	users = []
+	for u in qs:
+		u.usd_balance = WalletBalance.objects.filter(
+			wallet__user=u, currency__code='USD',
+		).values_list('amount', flat=True).first() or 0
+		u.eur_balance = WalletBalance.objects.filter(
+			wallet__user=u, currency__code='EUR',
+		).values_list('amount', flat=True).first() or 0
+		users.append(u)
+
+	return render(request, 'admin/management/manage_user.html', {
+		'users': users,
+		'stats': {
+			'total_users': User.objects.count(),
+			'active_users': User.objects.filter(is_active=True).count(),
+			'admins': User.objects.filter(role='admin').count(),
+		},
+		'search': search,
+	})

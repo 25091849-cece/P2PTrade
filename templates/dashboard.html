@@ -1,55 +1,16 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load url_utils %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P2PTrade | Dashboard</title>
+
+{% block title %}P2PTrade | Dashboard{% endblock %}
+
+{% block extra_head %}
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
   {% block extra_css %}{% endblock %}
-</head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <h2 class="logo">P2PTRADE</h2>
-      {% block sidebar_nav %}
-      <nav class="mt-6">
-        {% with rm=request.resolver_match %}
-          {% if rm and rm.url_name == 'dashboard' %}
-            <a href="{% url_or_placeholder 'accounts:dashboard' %}" class="nav-link active">Dashboard</a>
-          {% else %}
-            <a href="{% url_or_placeholder 'accounts:dashboard' %}" class="nav-link">Dashboard</a>
-          {% endif %}
+{% endblock %}
 
-          <div class="mt-3">
-            <a href="{% url_or_placeholder 'wallets:index' %}" data-module="wallets" class="nav-link {% if rm and rm.namespace == 'wallets' %}active{% endif %}">Wallet</a>
-          </div>
-
-          <div class="mt-3">
-            <a href="{% url_or_placeholder 'marketplace:index' %}" data-module="marketplace" class="nav-link {% if rm and rm.namespace == 'marketplace' %}active{% endif %}">Marketplace</a>
-          </div>
-
-          <div class="mt-3">
-            <a href="{% url_or_placeholder 'transactions:index' %}" data-module="transactions" class="nav-link {% if rm and rm.namespace == 'transactions' %}active{% endif %}">Transactions</a>
-          </div>
-        {% endwith %}
-      </nav>
-      {% endblock %}
-
-      <div class="user-profile">
-        <div class="flex gap-3 items-center">
-          <div class="user-avatar">{{ display_name|default:user.get_full_name|default:user.username|slice:":1"|upper }}</div>
-          <div>
-            <div class="font-bold">{{ display_name|default:user.get_full_name|default:user.username }}</div>
-            <div class="text-xs text-[#9aa6b2]">{{ user.email }}</div>
-          </div>
-        </div>
-        <div class="mt-3"><a href="{% url 'accounts:logout' %}" class="text-amber-400">Logout</a></div>
-      </div>
-    </aside>
-
-    <main class="main-content">
+{% block content %}
+  <div class="px-8 py-8">
       {% block dashboard_main %}
       <div class="dashboard-header">
         <h1 class="text-3xl font-bold mb-2">Welcome back, {{ display_name|default:user.get_full_name|default:user.username }}</h1>
@@ -159,8 +120,5 @@
         </section>
       </div>
       {% endblock %}
-    </main>
   </div>
-  {% block extra_js %}{% endblock %}
-</body>
-</html>
+{% endblock %}
