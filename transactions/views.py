@@ -3,7 +3,7 @@ import io
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -11,6 +11,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 
+from accounts.context_processors import is_admin_user
 from marketplace.models import Transaction
 
 
@@ -221,7 +222,11 @@ def export_summary_pdf(request):
     return response
 
 
+@login_required(login_url='login')
 def admin_index(request):
+    if not is_admin_user(request.user):
+        return redirect('accounts:dashboard')
+
     transactions = Transaction.objects.select_related(
         'buyer', 'seller', 'user', 'from_currency', 'to_currency'
     ).order_by('-created_at')

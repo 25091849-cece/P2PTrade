@@ -18,6 +18,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from disputes import views as dispute_views
+from transactions import views as transaction_views
 
 urlpatterns = [
     path('', include('accounts.urls')),
@@ -29,5 +31,8 @@ urlpatterns = [
     path('marketplace/', include(('marketplace.urls', 'marketplace'), namespace='marketplace')),
     path('transactions/', include(('transactions.urls', 'transactions'), namespace='transactions')),
     path('disputes/', include(('disputes.urls', 'disputes'), namespace='disputes')),
+    path('admin/transactions/', transaction_views.admin_index, name='admin_transactions'),
+    path('admin/disputes/', dispute_views.index, name='admin_disputes'),
+    path('admin/disputes/<int:dispute_id>/', dispute_views.detail, name='admin_dispute_detail'),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from accounts.context_processors import is_admin_user
 from accounts.models import User
 from core.models import Currency
 from disputes.models import (
@@ -95,7 +96,7 @@ def _sla_snapshot(target_date):
 
 
 def _require_admin(user):
-    return user.is_authenticated and user.is_admin()
+    return is_admin_user(user)
 
 
 def _notify_admins_dispute_raised(dispute):
@@ -263,7 +264,7 @@ def detail(request, dispute_id):
                 )
             return redirect('disputes:detail', dispute_id=dispute.id)
 
-    return render(request, 'admin/disputes/detail.html', {
+    return render(request, 'admin/disputes/details.html', {
         'dispute': dispute,
         'resolution_choices': DisputeResolution.RESOLUTION_TYPE_CHOICES,
         'activity_logs': dispute.activity_logs.select_related('actor')[:20],

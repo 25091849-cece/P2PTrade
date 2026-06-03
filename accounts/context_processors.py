@@ -2,12 +2,22 @@ from disputes.models import Dispute
 from notifications.models import Notification
 
 
+def is_admin_user(user):
+    return bool(
+        user and user.is_authenticated and (
+            getattr(user, 'is_superuser', False)
+            or getattr(user, 'is_staff', False)
+            or getattr(user, 'is_admin', lambda: False)()
+        )
+    )
+
+
 def admin_badges(request):
     """Expose role-aware sidebar data to all templates."""
     user = getattr(request, 'user', None)
-    is_admin_user = bool(user and user.is_authenticated and user.is_admin())
+    admin_user = is_admin_user(user)
 
-    if not is_admin_user:
+    if not admin_user:
         return {'is_admin_user': False}
 
     return {

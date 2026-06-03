@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Q, Sum
 
+from accounts.context_processors import is_admin_user as check_is_admin_user
 from accounts.models import User
 from wallets.models import Wallet, WalletBalance
 from marketplace.models import Deal, Transaction
@@ -61,13 +62,7 @@ def _signup_profile(wallet=None):
 
 
 def _is_admin_user(user):
-	return bool(
-		user and (
-			getattr(user, 'is_superuser', False)
-			or getattr(user, 'is_staff', False)
-			or getattr(user, 'is_admin', lambda: False)()
-		)
-	)
+	return check_is_admin_user(user)
 
 
 def _admin_dashboard_context():
