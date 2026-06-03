@@ -56,31 +56,56 @@
         <p class="text-xs text-p2p-muted mt-1">How much "to" currency per 1 "from"</p>
       </div>
 
+      <!-- Deal Duration -->
       <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-200 mb-2">Market Trend</label>
-        <div class="flex gap-3">
-          <label class="flex-1 cursor-pointer">
-            <input type="radio" name="trend" value="up" class="peer sr-only" {% if form.trend == 'up' or not form.trend %}checked{% endif %}>
-            <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-green-500 peer-checked:bg-green-500/10 transition">
-              <span class="text-green-400 text-lg">↑</span>
-              <span class="text-white font-medium">Up</span>
+        <label class="block text-sm font-medium text-gray-200 mb-2">Deal Duration</label>
+        <div class="grid grid-cols-5 gap-2">
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="1" class="peer sr-only" {% if request.POST.duration == '1' %}checked{% endif %}>
+            <div class="flex flex-col items-center justify-center px-3 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-p2p-accent peer-checked:bg-p2p-accent/10 transition text-center">
+              <span class="text-white font-bold text-lg">1</span>
+              <span class="text-p2p-muted text-xs">H</span>
             </div>
           </label>
-          <label class="flex-1 cursor-pointer">
-            <input type="radio" name="trend" value="down" class="peer sr-only" {% if form.trend == 'down' %}checked{% endif %}>
-            <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-red-500 peer-checked:bg-red-500/10 transition">
-              <span class="text-red-400 text-lg">↓</span>
-              <span class="text-white font-medium">Down</span>
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="6" class="peer sr-only" {% if request.POST.duration == '6' %}checked{% endif %}>
+            <div class="flex flex-col items-center justify-center px-3 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-p2p-accent peer-checked:bg-p2p-accent/10 transition text-center">
+              <span class="text-white font-bold text-lg">6</span>
+              <span class="text-p2p-muted text-xs">H</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="12" class="peer sr-only" {% if request.POST.duration == '12' %}checked{% endif %}>
+            <div class="flex flex-col items-center justify-center px-3 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-p2p-accent peer-checked:bg-p2p-accent/10 transition text-center">
+              <span class="text-white font-bold text-lg">12</span>
+              <span class="text-p2p-muted text-xs">H</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="24" class="peer sr-only" {% if request.POST.duration == '24' %}checked{% endif %}>
+            <div class="flex flex-col items-center justify-center px-3 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-p2p-accent peer-checked:bg-p2p-accent/10 transition text-center">
+              <span class="text-white font-bold text-lg">24</span>
+              <span class="text-p2p-muted text-xs">H</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="48" class="peer sr-only" checked>
+            <div class="flex flex-col items-center justify-center px-3 py-3 rounded-xl border border-p2p-border bg-p2p-bg peer-checked:border-p2p-accent peer-checked:bg-p2p-accent/10 transition text-center">
+              <span class="text-white font-bold text-lg">48</span>
+              <span class="text-p2p-muted text-xs">H</span>
             </div>
           </label>
         </div>
       </div>
     </div>
 
+
+
+    <!-- Information Box -->
     <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
       <div class="flex gap-3">
         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <p>Your deal will be visible in the marketplace for 48 hours. Other users can accept it during this time.</p>
+        <p>Your deal will be visible in the marketplace for the selected duration. Other users can accept it during this time.</p>
       </div>
     </div>
 

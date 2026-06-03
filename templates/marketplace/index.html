@@ -113,6 +113,15 @@
               <span class="countdown" data-expires="{{ deal.expires_at|date:'c' }}">{{ deal.time_remaining_display }}</span>
             </div>
           </div>
+
+         <!-- Accept Button -->
+          <form method="post" action="{% url 'marketplace:accept' deal.id %}" class="w-full p-3">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-p2p-accent text-p2p-bg font-semibold px-4 py-2.5 rounded-xl hover:bg-amber-400 transition">
+              Accept Deal
+            </button>
+          </form>
+
         </div>
       {% endfor %}
     </div>
