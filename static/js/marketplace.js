@@ -132,6 +132,57 @@ const Marketplace = {
   },
 
   /**
+   * Initialize deal card modals
+   */
+  initDealModals() {
+    const dealCardBtns = document.querySelectorAll('.deal-card-btn');
+
+    dealCardBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modalId = btn.dataset.dealModal;
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.showModal();
+        }
+      });
+    });
+
+    // Close modal handlers
+    const closeButtons = document.querySelectorAll('.deal-modal-close');
+    const cancelButtons = document.querySelectorAll('.deal-modal-cancel');
+
+    closeButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const modal = btn.closest('dialog');
+        if (modal) {
+          modal.close();
+        }
+      });
+    });
+
+    cancelButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modal = btn.closest('dialog');
+        if (modal) {
+          modal.close();
+        }
+      });
+    });
+
+    // Close modal when clicking outside (on backdrop)
+    const modals = document.querySelectorAll('.deal-modal');
+    modals.forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.close();
+        }
+      });
+    });
+  },
+
+  /**
    * Initialize accept deal buttons (if using AJAX instead of form submit)
    */
   initAcceptDealButtons() {
@@ -165,6 +216,7 @@ const Marketplace = {
     this.initCountdownTimers();
     this.initCreateDealForm();
     this.initAcceptDealButtons();
+    this.initDealModals();
   }
 };
 
@@ -172,4 +224,3 @@ const Marketplace = {
 document.addEventListener('DOMContentLoaded', () => {
   Marketplace.init();
 });
-
