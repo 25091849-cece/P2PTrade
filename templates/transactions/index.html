@@ -23,14 +23,14 @@
     </a>
   </div>
 
-  {% if transactions %}
+    {% if transactions %}
   <div class="txn-filter-tabs">
     <div class="txn-filter-indicator"></div>
-    <a href="?type=all" class="txn-filter-tab {% if current_filter == 'all' %}active{% endif %}">All</a>
-    <a href="?type=exchange" class="txn-filter-tab {% if current_filter == 'exchange' %}active{% endif %}">Exchange</a>
-    <a href="?type=deposit" class="txn-filter-tab {% if current_filter == 'deposit' %}active{% endif %}">Deposit</a>
-    <a href="?type=withdrawal" class="txn-filter-tab {% if current_filter == 'withdrawal' %}active{% endif %}">Withdrawal</a>
-    <a href="?type=deal_created" class="txn-filter-tab {% if current_filter == 'deal_created' %}active{% endif %}">Deal Created</a>
+    <button class="txn-filter-tab active" data-filter="all">All</button>
+    <button class="txn-filter-tab" data-filter="completed">Completed</button>
+    <button class="txn-filter-tab" data-filter="pending">Pending</button>
+    <button class="txn-filter-tab" data-filter="failed">Failed</button>
+    <button class="txn-filter-tab" data-filter="dispute_raised">Dispute Raised</button>
   </div>
 
   <div class="txn-table-wrapper">
