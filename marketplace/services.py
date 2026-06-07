@@ -109,7 +109,7 @@ class DealService:
             amount=deal.get_receive_amount(),
             received_amount=deal.amount,
             rate=deal.rate,
-            status='awaiting_confirmation',
+            status='completed',
             payment_reference=payment_reference
         )
 
@@ -124,7 +124,7 @@ class DealService:
             amount=deal.amount,
             received_amount=deal.get_receive_amount(),
             rate=deal.rate,
-            status='pending',
+            status='completed',
             payment_reference=payment_reference
         )
 

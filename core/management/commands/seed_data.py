@@ -153,96 +153,177 @@ class Command(BaseCommand):
         # =========================
         self.stdout.write("Creating deals...")
 
-        Deal.objects.get_or_create(
+        # Active deal
+        Deal.objects.create(
             seller=users["user@p2ptrade.com"],
             from_currency=currencies["USD"],
             to_currency=currencies["EUR"],
             amount=Decimal("1500"),
-            defaults={
-                "rate": Decimal("0.92"),
-                "trend": "up",
-                "status": "active",
-                "expires_at": timezone.now() + timedelta(hours=48),
-            },
+            rate=Decimal("0.92"),
+            trend="up",
+            status="active",
+            expires_at=timezone.now() + timedelta(hours=48),
         )
 
-        Deal.objects.get_or_create(
+        # Accepted deal
+        Deal.objects.create(
             seller=users["trader@p2ptrade.com"],
             from_currency=currencies["EUR"],
             to_currency=currencies["GBP"],
             amount=Decimal("800"),
-            defaults={
-                "rate": Decimal("0.86"),
-                "trend": "down",
-                "status": "active",
-                "expires_at": timezone.now() + timedelta(hours=48),
-            },
+            rate=Decimal("0.86"),
+            trend="down",
+            status="accepted",
+            accepted_at=timezone.now() - timedelta(hours=6),
+            expires_at=timezone.now() + timedelta(hours=24),
         )
 
-        # =========================
-        # 6. TRANSACTIONS
-        # =========================
-        self.stdout.write("Creating transactions...")
+        # Expired deal
+        Deal.objects.create(
+            seller=users["admin@p2ptrade.com"],
+            from_currency=currencies["USD"],
+            to_currency=currencies["MYR"],
+            amount=Decimal("2000"),
+            rate=Decimal("4.85"),
+            trend="up",
+            status="expired",
+            expires_at=timezone.now() - timedelta(hours=12),
+        )
 
-        now = timezone.now()
+        # Cancelled deal
+        Deal.objects.create(
+            seller=users["user@p2ptrade.com"],
+            from_currency=currencies["GBP"],
+            to_currency=currencies["USD"],
+            amount=Decimal("500"),
+            rate=Decimal("1.25"),
+            trend="down",
+            status="cancelled",
+            expires_at=timezone.now() + timedelta(hours=24),
+        )
 
-        transactions = [
-            {
-                "buyer": users["user@p2ptrade.com"],
-                "seller": users["admin@p2ptrade.com"],
-                "from_currency": "USD",
-                "to_currency": "EUR",
-                "amount": "1200",
-                "rate": "0.92",
-                "status": "completed",
-                "hours": 3,
-            },
-            {
-                "buyer": users["user@p2ptrade.com"],
-                "seller": None,
-                "user": users["user@p2ptrade.com"],
-                "from_currency": "USD",
-                "to_currency": "USD",
-                "amount": "5000",
-                "rate": "1.00",
-                "status": "completed",
-                "hours": 24,
-            },
-            {
-                "buyer": users["trader@p2ptrade.com"],
-                "seller": users["user@p2ptrade.com"],
-                "from_currency": "EUR",
-                "to_currency": "GBP",
-                "amount": "500",
-                "rate": "0.86",
-                "status": "pending",
-                "hours": 0,
-            },
-        ]
-
-        for tx in transactions:
-
-            hours = tx.pop("hours")
-
-            Transaction.objects.create(
-                buyer=tx.get("buyer"),
-                seller=tx.get("seller"),
-                user=tx.get("user"),
-                from_currency=currencies[tx["from_currency"]],
-                to_currency=currencies[tx["to_currency"]],
-                amount=Decimal(tx["amount"]),
-                rate=Decimal(tx["rate"]),
-                status=tx["status"],
-                created_at=now - timedelta(hours=hours),
-                completed_at=(
-                    now - timedelta(hours=hours)
-                    if tx["status"] == "completed"
-                    else None
-                ),
-                tx_hash="".join(
-                    random.choices("0123456789abcdef", k=64)
-                ),
-            )
+        # # =========================
+        # # 6. TRANSACTIONS
+        # # =========================
+        # self.stdout.write("Creating transactions...")
+        #
+        # now = timezone.now()
+        #
+        # transactions = [
+        #     # Deposits
+        #     {
+        #         "type": "deposit",
+        #         "user": users["user@p2ptrade.com"],
+        #         "from_currency": "USD",
+        #         "to_currency": "USD",
+        #         "amount": "5000",
+        #         "rate": "1.00",
+        #         "status": "completed",
+        #         "hours": 72,
+        #     },
+        #     {
+        #         "type": "deposit",
+        #         "user": users["trader@p2ptrade.com"],
+        #         "from_currency": "MYR",
+        #         "to_currency": "MYR",
+        #         "amount": "3000",
+        #         "rate": "1.00",
+        #         "status": "completed",
+        #         "hours": 48,
+        #     },
+        #
+        #     # Withdrawals
+        #     {
+        #         "type": "withdrawal",
+        #         "user": users["user@p2ptrade.com"],
+        #         "from_currency": "USD",
+        #         "to_currency": "USD",
+        #         "amount": "500",
+        #         "rate": "1.00",
+        #         "status": "completed",
+        #         "hours": 36,
+        #     },
+        #     {
+        #         "type": "withdrawal",
+        #         "user": users["trader@p2ptrade.com"],
+        #         "from_currency": "MYR",
+        #         "to_currency": "MYR",
+        #         "amount": "800",
+        #         "rate": "1.00",
+        #         "status": "failed",
+        #         "hours": 24,
+        #     },
+        #
+        #     # Exchanges
+        #     {
+        #         "type": "exchange",
+        #         "buyer": users["user@p2ptrade.com"],
+        #         "seller": users["admin@p2ptrade.com"],
+        #         "from_currency": "USD",
+        #         "to_currency": "EUR",
+        #         "amount": "1200",
+        #         "rate": "0.92",
+        #         "status": "completed",
+        #         "hours": 12,
+        #     },
+        #     {
+        #         "type": "exchange",
+        #         "buyer": users["trader@p2ptrade.com"],
+        #         "seller": users["user@p2ptrade.com"],
+        #         "from_currency": "EUR",
+        #         "to_currency": "GBP",
+        #         "amount": "750",
+        #         "rate": "0.86",
+        #         "status": "completed",
+        #         "hours": 6,
+        #     },
+        #     {
+        #         "type": "exchange",
+        #         "buyer": users["user@p2ptrade.com"],
+        #         "seller": users["trader@p2ptrade.com"],
+        #         "from_currency": "USD",
+        #         "to_currency": "MYR",
+        #         "amount": "1000",
+        #         "rate": "4.85",
+        #         "status": "failed",
+        #         "hours": 4,
+        #     },
+        #     {
+        #         "type": "exchange",
+        #         "buyer": users["trader@p2ptrade.com"],
+        #         "seller": users["admin@p2ptrade.com"],
+        #         "from_currency": "GBP",
+        #         "to_currency": "USD",
+        #         "amount": "300",
+        #         "rate": "1.25",
+        #         "status": "dispute_raised",
+        #         "hours": 2,
+        #     },
+        # ]
+        #
+        # for tx in transactions:
+        #
+        #     hours = tx.pop("hours")
+        #
+        #     Transaction.objects.create(
+        #         buyer=tx.get("buyer"),
+        #         seller=tx.get("seller"),
+        #         user=tx.get("user"),
+        #         from_currency=currencies[tx["from_currency"]],
+        #         to_currency=currencies[tx["to_currency"]],
+        #         amount=Decimal(tx["amount"]),
+        #         rate=Decimal(tx["rate"]),
+        #         status=tx["status"],
+        #         created_at=now - timedelta(hours=hours),
+        #         completed_at=(
+        #             now - timedelta(hours=hours)
+        #             if tx["status"] == "completed"
+        #             else None
+        #         ),
+        #         tx_hash="".join(
+        #             random.choices("0123456789abcdef", k=64)
+        #         ),
+        #     )
 
         # =========================
         # DONE
