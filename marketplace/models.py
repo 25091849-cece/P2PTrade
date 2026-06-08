@@ -64,6 +64,8 @@ class Transaction(models.Model):
         ('deposit', 'Deposit'),
         ('withdrawal', 'Withdrawal'),
         ('exchange', 'Exchange'),
+        ('purchase', 'Purchase'),  # buyer's P2P transaction
+        ('sale', 'Sale'),  # seller's P2P transaction
     ]
 
     STATUS_CHOICES = [
@@ -147,10 +149,14 @@ class Transaction(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk and not self.payment_reference:
             ts = timezone.now().strftime('%Y%m%d%H%M%S')
-            rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            rand = ''.join(
+                random.choices(
+                    string.ascii_uppercase + string.digits,
+                    k=6
+                )
+            )
             self.payment_reference = f'P2P{ts}{rand}'
-        if self.amount and self.rate:
-            self.received_amount = round(self.amount / self.rate, 2)
+
         super().save(*args, **kwargs)
 
     def mark_completed(self):

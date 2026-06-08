@@ -18,9 +18,14 @@ from marketplace.models import Transaction
 @login_required
 def index(request):
     user = request.user
+    # After — each FK now exclusively belongs to one party
     transactions = (
         Transaction.objects
-        .filter(Q(buyer=user) | Q(seller=user) | Q(user=user))
+        .filter(
+            Q(buyer=user, seller__isnull=True) |  # buyer's P2P records
+            Q(seller=user, buyer__isnull=True) |  # seller's P2P records
+            Q(user=user)  # deal-created & deposits/withdrawals
+        )
         .select_related('from_currency', 'to_currency', 'buyer', 'seller', 'deal')
         .order_by('-created_at')
     )
@@ -30,8 +35,11 @@ def index(request):
     
     if txn_type_filter != 'all':
         if txn_type_filter == 'deal_created':
-            # Deal Created transactions are exchange type with a deal ID
             transactions = transactions.filter(type='exchange', deal__isnull=False)
+        elif txn_type_filter == 'purchase':
+            transactions = transactions.filter(type='purchase')
+        elif txn_type_filter == 'sale':
+            transactions = transactions.filter(type='sale')
         else:
             transactions = transactions.filter(type=txn_type_filter)
     

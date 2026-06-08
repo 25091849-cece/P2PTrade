@@ -28,8 +28,8 @@
     <div class="txn-filter-indicator"></div>
     <button class="txn-filter-tab active" data-filter="all">All</button>
     <button class="txn-filter-tab" data-filter="completed">Completed</button>
-    <button class="txn-filter-tab" data-filter="pending">Pending</button>
-    <button class="txn-filter-tab" data-filter="failed">Failed</button>
+{#    <button class="txn-filter-tab" data-filter="pending">Pending</button>#}
+{#    <button class="txn-filter-tab" data-filter="failed">Failed</button>#}
     <button class="txn-filter-tab" data-filter="dispute_raised">Dispute Raised</button>
   </div>
 
@@ -52,13 +52,7 @@
         <tr class="txn-row" data-status="{{ txn.status }}" data-id="{{ txn.id }}">
           <td class="txn-td-id">#{{ txn.id }}</td>
           <td class="txn-td">
-            <span class="activity-type">
-              {% if txn.deal and txn.type == 'exchange' %}
-                Deal Created
-              {% else %}
-                {{ txn.type|title }}
-              {% endif %}
-            </span>
+            <span class="activity-type">{{ txn.get_type_display }}</span>
           </td>
           <td class="txn-td-pair">
             {{ txn.from_currency.code }} → {{ txn.to_currency.code }}
@@ -117,9 +111,9 @@
                 </div>
                 <div class="txn-detail-item">
                   <span class="txn-detail-label">Counterparty</span>
-                  {% if txn.type == 'exchange' %}
-                    {% if request.user == txn.buyer %}
-                      {% with cp=txn.seller %}
+                  {% if txn.type == 'exchange' and txn.deal %}
+                      {% if txn.buyer == request.user %}
+                          {% with cp=txn.deal.seller %}  {# buyer's counterparty = deal seller #}
                         <div class="txn-detail-sub">
                           <div class="txn-detail-sub-item">
                             <span class="txn-detail-sub-key">User ID</span>
@@ -136,7 +130,7 @@
                         </div>
                       {% endwith %}
                     {% else %}
-                      {% with cp=txn.buyer %}
+                      {% with cp=txn.deal.seller %}  {# seller's record: buyer comes from deal's transactions #}
                         <div class="txn-detail-sub">
                           <div class="txn-detail-sub-item">
                             <span class="txn-detail-sub-key">User ID</span>

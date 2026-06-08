@@ -70,82 +70,85 @@ class DealService:
         return deal
 
     @staticmethod
-    @db_transaction.atomic
-    def accept_deal(deal: Deal, buyer: User) -> tuple:
-        """
-        Accept a deal and create transactions for both buyer and seller.
-        Returns: (buyer_transaction, seller_transaction)
-        """
-        # Validate deal is still active
-        if deal.is_expired():
-            raise DealExpiredError(f"Deal #{deal.id} has expired")
+    def accept_deal(deal, buyer):
+        from django.utils import timezone
+        from marketplace.models import Transaction
+        from core.exceptions import InsufficientBalanceError
+        from decimal import Decimal
 
-        if deal.status != 'active':
-            raise InvalidTransactionError(f"Deal #{deal.id} is not active")
+        if deal.status != 'active' or deal.is_expired():
+            raise DealExpiredError("Deal is no longer available.")
 
-        # Check buyer has sufficient balance
-        buyer_wallet = buyer.wallet
-        buyer_balance = buyer_wallet.balances.get(currency=deal.to_currency)
+        if deal.seller == buyer:
+            raise InvalidTransactionError("Cannot accept your own deal.")
 
-        if buyer_balance.amount < deal.get_receive_amount():
-            raise InsufficientBalanceError(
-                f"Insufficient {deal.to_currency.code} balance. "
-                f"Need {deal.get_receive_amount()}, have {buyer_balance.amount}"
-            )
+        seller = deal.seller
 
-        # Generate payment reference
-        timestamp = int(timezone.now().timestamp())
-        random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        payment_reference = f"P2P{timestamp}{random_suffix}"
+        # Amount the buyer must pay (in deal.to_currency, e.g. MYR)
+        buyer_pays = deal.get_receive_amount()  # = amount / rate = 100/0.2 = 500 MYR
 
-        # Create buyer transaction (purchase)
-        buyer_txn = Transaction.objects.create(
-            buyer=buyer,
-            seller=deal.seller,
-            deal=deal,
-            type='purchase',
-            from_currency=deal.to_currency,
-            to_currency=deal.from_currency,
-            amount=deal.get_receive_amount(),
-            received_amount=deal.amount,
-            rate=deal.rate,
-            status='completed',
-            payment_reference=payment_reference
-        )
+        # Deduct from buyer's wallet
+        try:
+            buyer_wallet = buyer.wallet.balances.get(currency=deal.to_currency)
+        except WalletBalance.DoesNotExist:
+            raise InsufficientBalanceError(f"No {deal.to_currency.code} wallet found.")
 
-        # Create seller transaction (sale)
-        seller_txn = Transaction.objects.create(
-            buyer=buyer,
-            seller=deal.seller,
-            deal=deal,
-            type='sale',
-            from_currency=deal.from_currency,
-            to_currency=deal.to_currency,
-            amount=deal.amount,
-            received_amount=deal.get_receive_amount(),
-            rate=deal.rate,
-            status='completed',
-            payment_reference=payment_reference
-        )
+        if buyer_wallet.amount < Decimal(str(buyer_pays)):
+            raise InsufficientBalanceError("Insufficient balance.")
 
-        # Update deal status
+        buyer_wallet.subtract_balance(buyer_pays)
+
+        # Release seller's reserved balance — already deducted at deal creation,
+        # now credit it to seller as received MYR
+        seller_wallet_to = seller.wallet.balances.get_or_create(
+            currency=deal.to_currency
+        )[0]
+        seller_wallet_to.add_balance(buyer_pays)  # seller receives 500 MYR
+
+        # Credit buyer with USD
+        buyer_wallet_to = buyer.wallet.balances.get_or_create(
+            currency=deal.from_currency
+        )[0]
+        buyer_wallet_to.add_balance(deal.amount)  # buyer receives 100 USD
+
+        # Mark deal accepted
         deal.status = 'accepted'
         deal.accepted_at = timezone.now()
+        deal.balance_reserved = False
         deal.save()
 
-        # Send notifications
-        Notification.objects.create(
-            user=deal.seller,
-            notification_type='deal_accepted',
-            message=f'Your deal #{deal.id} has been accepted! Payment reference: {payment_reference}',
-            related_id=buyer_txn.id
+        now = timezone.now()
+
+        # ── BUYER transaction ──────────────────────────────────────────────
+        # buyer field only; NO seller field → query isolates to buyer
+        buyer_txn = Transaction.objects.create(
+            buyer=buyer,  # ← only buyer FK set
+            seller=None,  # ← explicitly null
+            deal=deal,
+            type='purchase',
+            from_currency=deal.to_currency,  # buyer pays MYR
+            to_currency=deal.from_currency,  # buyer receives USD
+            amount=Decimal(str(buyer_pays)),  # 500.00 MYR
+            received_amount=deal.amount,  # 100.00 USD
+            rate=deal.rate,
+            status='completed',
+            completed_at=now,
         )
 
-        Notification.objects.create(
-            user=buyer,
-            notification_type='deal_accepted',
-            message=f'You have accepted deal #{deal.id}. Payment reference: {payment_reference}',
-            related_id=buyer_txn.id
+        # ── SELLER transaction ─────────────────────────────────────────────
+        # seller field only; NO buyer field → query isolates to seller
+        seller_txn = Transaction.objects.create(
+            buyer=None,  # ← explicitly null
+            seller=seller,  # ← only seller FK set
+            deal=deal,
+            type='sale',
+            from_currency=deal.from_currency,  # seller pays USD
+            to_currency=deal.to_currency,  # seller receives MYR
+            amount=deal.amount,  # 100.00 USD
+            received_amount=Decimal(str(buyer_pays)),  # 500.00 MYR ← FIXED
+            rate=deal.rate,
+            status='completed',
+            completed_at=now,
         )
 
         return buyer_txn, seller_txn

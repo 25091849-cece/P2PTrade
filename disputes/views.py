@@ -276,19 +276,39 @@ def detail(request, dispute_id):
 # User: Raise / Cancel dispute (preserves original UI; adds admin notification)
 # ============================================================================
 @login_required
+@login_required
 def raise_dispute(request, txn_id):
     txn = get_object_or_404(
-        Transaction.objects.select_related('buyer', 'seller', 'from_currency', 'to_currency'),
+        Transaction.objects.select_related(
+            'buyer', 'seller', 'from_currency', 'to_currency', 'deal'
+        ),
         pk=txn_id,
         status='completed',
     )
 
     user = request.user
-    if txn.buyer != user and txn.seller != user:
+
+    # ── Resolve both parties via deal, since one FK is now null ──────────────
+    if txn.deal:
+        actual_seller = txn.deal.seller
+        # Buyer is whoever accepted the deal — find them from the purchase txn
+        purchase_txn = txn.deal.transactions.filter(
+            type='purchase'
+        ).select_related('buyer').first()
+        actual_buyer = purchase_txn.buyer if purchase_txn else None
+    else:
+        # Fallback for deposits/withdrawals that have no deal
+        actual_buyer = txn.buyer
+        actual_seller = txn.seller
+
+    # ── Auth check ────────────────────────────────────────────────────────────
+    if user not in (actual_buyer, actual_seller):
         raise Http404
 
     if hasattr(txn, 'dispute'):
         return redirect('transactions:index')
+
+    counterparty = actual_seller if user == actual_buyer else actual_buyer
 
     if request.method == 'POST':
         reason = request.POST.get('reason', '').strip()
@@ -296,8 +316,8 @@ def raise_dispute(request, txn_id):
         if reason:
             dispute = Dispute.objects.create(
                 transaction=txn,
-                buyer=txn.buyer,
-                seller=txn.seller,
+                buyer=actual_buyer,       # ← resolved, never None
+                seller=actual_seller,     # ← resolved, never None
                 raised_by=user,
                 from_currency=txn.from_currency,
                 to_currency=txn.to_currency,
@@ -314,13 +334,11 @@ def raise_dispute(request, txn_id):
                 action=f'Dispute raised by {user.email}.',
             )
             _notify_admins_dispute_raised(dispute)
-
             return redirect('transactions:index')
 
-    counterparty = txn.seller if txn.buyer == user else txn.buyer
     return render(request, 'disputes/raise.html', {
         'txn': txn,
-        'counterparty': counterparty,
+        'counterparty': counterparty,   # always a real User now
     })
 
 
@@ -331,7 +349,18 @@ def cancel_dispute(request, txn_id):
 
     txn = get_object_or_404(Transaction, pk=txn_id, status='dispute_raised')
     user = request.user
-    if txn.buyer != user and txn.seller != user:
+    # After
+    if txn.deal:
+        purchase_txn = txn.deal.transactions.filter(
+            type='purchase'
+        ).select_related('buyer').first()
+        actual_buyer = purchase_txn.buyer if purchase_txn else None
+        actual_seller = txn.deal.seller
+    else:
+        actual_buyer = txn.buyer
+        actual_seller = txn.seller
+
+    if user not in (actual_buyer, actual_seller):
         raise Http404
 
     if hasattr(txn, 'dispute'):
