@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 {% load url_utils %}
 
@@ -10,137 +10,246 @@
 {% endblock %}
 
 {% block content %}
-  <div class="px-8 py-8">
-    {% block dashboard_main %}
-      <div class="dashboard-header">
-        <h1 class="text-3xl font-bold mb-2">Welcome back, {{ display_name|default:user.get_full_name|default:user.username }}</h1>
-        <p class="text-[#9aa6b2]">Here's what's happening with your account today</p>
-      </div>
+<div class="px-8 py-8">
+  {% block dashboard_main %}
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <div class="stat-icon total-balance" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h10A2.5 2.5 0 0 1 18 7.5v9A2.5 2.5 0 0 1 15.5 19h-10A2.5 2.5 0 0 1 3 16.5v-9Z" />
-                <path d="M18 8.5h1.5A1.5 1.5 0 0 1 21 10v4a1.5 1.5 0 0 1-1.5 1.5H18" />
-                <circle cx="16" cy="12" r="1" />
-              </svg>
-            </div>
-{#            <div class="stat-change {{ total_balance_change_class }}">{{ total_balance_change_display }}</div>#}
-          </div>
-          <div class="stat-label">Total Balance</div>
-          <div class="stat-value">${{ profile.total_balance_usd|floatformat:2 }}</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <div class="stat-icon active-trades" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 16l6-6 4 4 6-6" />
-                <path d="M14 8h6v6" />
-              </svg>
-            </div>
-            <div class="stat-change {{ active_trades_change_class }}">{{ active_trades_change_display }}</div>
-          </div>
-          <div class="stat-label">Active Trades</div>
-          <div class="stat-value">{{ profile.active_trades }}</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <div class="stat-icon monthly-profit" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 18 18 6" />
-                <path d="M9 6h9v9" />
-              </svg>
-            </div>
-            <div class="stat-change {{ monthly_profit_change_class }}">{{ monthly_profit_change_display }}</div>
-          </div>
-          <div class="stat-label">Monthly Profit</div>
-          <div class="stat-value">${{ profile.monthly_profit_usd|floatformat:2 }}</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <div class="stat-icon transactions" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="8" />
-                <path d="M12 8v4l3 2" />
-                <path d="M9 3h6" />
-              </svg>
-            </div>
-            <div class="stat-meta">{{ transactions_label }}</div>
-          </div>
-          <div class="stat-label">Transactions</div>
-          <div class="stat-value">{{ transactions_this_month }}</div>
-        </div>
-      </div>
-
-      <div class="dashboard-content">
-        <section class="content-section">
-          <div class="section-header">
-            <h3 class="section-title">Live Exchange Rates</h3>
-            <span class="section-icon">↩️</span>
-          </div>
-
-          <div class="exchange-rates-list">
-            {% if exchange_rates %}
-              {% for rate in exchange_rates %}
-                <div class="exchange-rate-item">
-                  <div class="rate-pair">{{ rate.from_currency.code }} → {{ rate.to_currency.code }}</div>
-                  <div class="rate-value">{{ rate.rate }}</div>
-                  <div class="rate-change {% if rate.change_percent >= 0 %}text-green{% else %}text-red{% endif %}">
-                    {% if rate.change_percent >= 0 %}▲{% else %}▼{% endif %} {{ rate.change_percent|floatformat:2 }}%
-                  </div>
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="exchange-rate-item">
-                <div class="rate-pair">No exchange rates available</div>
-                <div class="rate-value">—</div>
-                <div class="rate-change text-[#9aa6b2]">Add exchange rate data to show live values.</div>
-              </div>
-            {% endif %}
-          </div>
-
-          <a href="{% url_or_placeholder 'marketplace:index' %}" class="view-marketplace-btn">View Marketplace ↗</a>
-        </section>
-
-        <section class="content-section recent-activity-section">
-          <h3 class="section-title mb-4">Recent Activity</h3>
-
-          <div class="activity-list">
-            {% if recent_activity %}
-              {% for activity in recent_activity %}
-                <div class="activity-item">
-                  <div class="activity-type">{{ activity.type }}</div>
-                  <div class="activity-details">
-                    <div class="activity-description">{{ activity.description }}</div>
-                    <div class="activity-time">
-                      {% if activity.timestamp %}
-                        {{ activity.timestamp|timesince }} ago
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="activity-amount">{{ activity.amount }}</div>
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="activity-item">
-                <div class="activity-type">No Activity</div>
-                <div class="activity-details">
-                  <div class="activity-description">You have no recent transactions yet.</div>
-                  <div class="activity-time">Recent activity will appear here once transactions are created.</div>
-                </div>
-                <div class="activity-amount">—</div>
-              </div>
-            {% endif %}
-          </div>
-
-          <a href="{% url_or_placeholder 'transactions:index' %}" class="view-all-transactions-btn">View All Transactions</a>
-        </section>
-      </div>
-    {% endblock %}
+  <div class="dashboard-header">
+    <h1 class="text-3xl font-bold mb-2">Welcome back, {{ display_name|default:user.name|default:user.get_full_name|default:user.username }}</h1>
+    <p class="text-[#9aa6b2]">Here's what's happening with your account today</p>
   </div>
+
+  {# ── Stat cards ──────────────────────────────────────────────────────────── #}
+  <div class="stats-grid">
+
+  {# ── E-Wallet Balances (replaces Total Wallet Balance) ── #}
+  <div class="stat-card stat-card-wallet">
+    <div class="stat-card-header">
+      <div class="stat-icon total-balance" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h10A2.5 2.5 0 0 1 18 7.5v9A2.5 2.5 0 0 1 15.5 19h-10A2.5 2.5 0 0 1 3 16.5v-9Z"/>
+          <path d="M18 8.5h1.5A1.5 1.5 0 0 1 21 10v4a1.5 1.5 0 0 1-1.5 1.5H18"/>
+          <circle cx="16" cy="12" r="1"/>
+        </svg>
+      </div>
+      <a href="{% url_or_placeholder 'wallets:index' %}" class="stat-manage-link">Manage ↗</a>
+    </div>
+    <div class="stat-label">E-Wallet Balances</div>
+    <div class="stat-wallet-list">
+      {% for bal in wallet_balances %}
+      <div class="stat-wallet-row">
+        <span class="stat-wallet-code">{{ bal.code }}</span>
+        <span class="stat-wallet-amount">{{ bal.symbol }}{{ bal.amount|floatformat:2 }}</span>
+      </div>
+      {% empty %}
+      <div class="stat-wallet-empty">No balances yet</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Active Deals (unchanged) ── #}
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon active-trades" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 16l6-6 4 4 6-6"/>
+          <path d="M14 8h6v6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-label">Active Deals</div>
+    <div class="stat-value">{{ active_trades_count }}</div>
+  </div>
+
+  {# ── Monthly Earnings (replaces Monthly Received) ── #}
+  <div class="stat-card stat-card-earnings">
+    <div class="stat-card-header">
+      <div class="stat-icon monthly-profit" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18 18 6"/>
+          <path d="M9 6h9v9"/>
+        </svg>
+      </div>
+      <span class="stat-meta">This month</span>
+    </div>
+    <div class="stat-label">Monthly Earnings</div>
+    <div class="stat-earnings-list">
+      {% for profit in monthly_profits %}
+      <div class="stat-earnings-row">
+        <span class="stat-earnings-code">{{ profit.code }}</span>
+        <span class="stat-earnings-amount">+{{ profit.amount|floatformat:2 }}</span>
+      </div>
+      {% empty %}
+      <div class="stat-wallet-empty">No earnings yet</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Transactions This Month (unchanged) ── #}
+  <div class="stat-card">
+    <div class="stat-card-header">
+      <div class="stat-icon transactions" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/>
+          <path d="M12 8v4l3 2"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-label">Transactions This Month</div>
+    <div class="stat-value">{{ transactions_this_month }}</div>
+  </div>
+
+</div>
+
+  {# ── Row 2: Your Active Deals + Marketplace Deals ────────────────────────── #}
+  <div class="dashboard-content">
+
+    <section class="content-section">
+      <div class="section-header">
+        <h3 class="section-title">Your Active Deals</h3>
+        <a href="{% url_or_placeholder 'marketplace:index' %}" class="section-link">View all ↗</a>
+      </div>
+
+      {% if active_deals %}
+        <div class="deal-list">
+          {% for deal in active_deals %}
+          <div class="deal-item">
+            <div class="deal-pair">
+              <span class="deal-from">{{ deal.from_currency.code }}</span>
+              <span class="deal-arrow">→</span>
+              <span class="deal-to">{{ deal.to_currency.code }}</span>
+            </div>
+            <div class="deal-meta">
+              <span class="deal-amount">{{ deal.amount|floatformat:2 }} {{ deal.from_currency.code }}</span>
+              <span class="deal-rate">@ {{ deal.rate }}</span>
+            </div>
+            <div class="deal-expires">
+              Expires {{ deal.expires_at|timesince }}
+            </div>
+            <div class="deal-trend deal-trend-{{ deal.trend }}">
+              {% if deal.trend == 'up' %}▲{% else %}▼{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="txn-empty">
+          <p class="txn-empty-title">No active deals</p>
+          <p class="txn-empty-subtitle">
+            <a href="{% url_or_placeholder 'marketplace:create' %}">Create a deal ↗</a>
+          </p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="content-section">
+      <div class="section-header">
+        <h3 class="section-title">Marketplace</h3>
+        <a href="{% url_or_placeholder 'marketplace:index' %}" class="section-link">Browse all ↗</a>
+      </div>
+
+      {% if marketplace_deals %}
+        <div class="deal-list">
+          {% for deal in marketplace_deals %}
+          <div class="deal-item">
+            <div class="deal-pair">
+              <span class="deal-from">{{ deal.from_currency.code }}</span>
+              <span class="deal-arrow">→</span>
+              <span class="deal-to">{{ deal.to_currency.code }}</span>
+            </div>
+            <div class="deal-meta">
+              <span class="deal-amount">{{ deal.amount|floatformat:2 }} {{ deal.from_currency.code }}</span>
+              <span class="deal-rate">@ {{ deal.rate }}</span>
+            </div>
+            <div class="deal-seller">
+              by {{ deal.seller.name|default:deal.seller.email }}
+            </div>
+            <a href="{% url_or_placeholder 'marketplace:confirm_accept' deal.id %}" class="deal-accept-btn">
+              Buy
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="txn-empty">
+          <p class="txn-empty-title">No deals available</p>
+          <p class="txn-empty-subtitle">Check back later or create your own deal.</p>
+        </div>
+      {% endif %}
+    </section>
+
+  </div>
+
+  {# ── Row 3: Exchange Rates + Recent Activity ──────────────────────────────── #}
+  <div class="dashboard-content">
+
+    <section class="content-section">
+      <div class="section-header">
+        <h3 class="section-title">Live Exchange Rates</h3>
+        <span class="section-icon">↩️</span>
+      </div>
+      <div class="exchange-rates-list">
+        {% if exchange_rates %}
+          {% for rate in exchange_rates %}
+          <div class="exchange-rate-item">
+            <div class="rate-pair">{{ rate.from_currency.code }} → {{ rate.to_currency.code }}</div>
+            <div class="rate-value">{{ rate.rate }}</div>
+            <div class="rate-change {% if rate.change_percent >= 0 %}text-green{% else %}text-red{% endif %}">
+              {% if rate.change_percent >= 0 %}▲{% else %}▼{% endif %} {{ rate.change_percent|floatformat:2 }}%
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="exchange-rate-item">
+            <div class="rate-pair">No exchange rates available</div>
+            <div class="rate-value">—</div>
+          </div>
+        {% endif %}
+      </div>
+      <a href="{% url_or_placeholder 'marketplace:index' %}" class="view-marketplace-btn">View Marketplace ↗</a>
+    </section>
+
+    <section class="content-section recent-activity-section">
+      <div class="section-header">
+        <h3 class="section-title">Recent Activity</h3>
+        <a href="{% url_or_placeholder 'transactions:index' %}" class="section-link">View all ↗</a>
+      </div>
+
+      <div class="activity-list">
+        {% if recent_activity %}
+          {% for activity in recent_activity %}
+          <div class="activity-item">
+            <div class="activity-type activity-type-{{ activity.status }}">{{ activity.type }}</div>
+            <div class="activity-details">
+              <div class="activity-description">
+                {{ activity.pair }}
+                {% if activity.counterparty %}
+                  <span class="activity-counterparty">· {{ activity.counterparty }}</span>
+                {% endif %}
+              </div>
+              <div class="activity-time">
+                {% if activity.timestamp %}{{ activity.timestamp|timesince }} ago{% endif %}
+                · <span class="activity-status-label activity-status-{{ activity.status }}">{{ activity.status|title }}</span>
+              </div>
+            </div>
+            <div class="activity-amount">{{ activity.amount }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="activity-item">
+            <div class="activity-type">No Activity</div>
+            <div class="activity-details">
+              <div class="activity-description">No recent transactions yet.</div>
+            </div>
+            <div class="activity-amount">—</div>
+          </div>
+        {% endif %}
+      </div>
+
+      <a href="{% url_or_placeholder 'transactions:index' %}" class="view-all-transactions-btn">View All Transactions</a>
+    </section>
+
+  </div>
+
+  {% endblock %}
+</div>
 {% endblock %}

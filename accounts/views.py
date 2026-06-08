@@ -209,63 +209,155 @@ def signup_success(request):
     }
     return render(request, "account/signup_success.html", context)
 
+"""
+Replace the dashboard_page function in accounts/views.py with this version.
+All other functions in that file remain unchanged.
+"""
 
 @login_required(login_url="login")
 def dashboard_page(request):
     is_admin_user = _is_admin_user(request.user)
 
-    # Admin: redesigned Figma dashboard (stats + chart + Platform Health)
     if is_admin_user:
         return render(request, "admin_dashboard.html", _admin_dashboard_context())
 
-    # Regular user: keep the original dashboard untouched
-    wallet = _wallet_or_none(request.user)
+    user   = request.user
+    wallet = _wallet_or_none(user)
+    now    = timezone.now()
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # ── 1. Wallet balances (all currencies) ──────────────────────────────────
+    wallet_balances = []
+    if wallet:
+        for wb in (
+            wallet.balances
+            .select_related("currency")
+            .filter(amount__gt=0)
+            .order_by("-amount")
+        ):
+            wallet_balances.append({
+                "code":   wb.currency.code,
+                "name":   wb.currency.name,
+                "symbol": wb.currency.symbol,
+                "amount": wb.amount,
+            })
+
+    # ── 2. Monthly profit — received amounts grouped by currency ─────────────
+    completed_this_month = Transaction.objects.filter(
+        Q(buyer=user) | Q(seller=user),
+        status="completed",
+        completed_at__gte=month_start,
+        type__in=["purchase", "sale"],
+    ).select_related("to_currency")
+
+    profit_by_currency = {}
+    for txn in completed_this_month:
+        code = txn.to_currency.code
+        profit_by_currency[code] = profit_by_currency.get(
+            code, Decimal("0")
+        ) + (txn.received_amount or Decimal("0"))
+
+    monthly_profits = [
+        {"code": code, "amount": amount}
+        for code, amount in sorted(profit_by_currency.items(), key=lambda x: -x[1])
+    ]
+
+    # ── 3. Active trades (deals user is selling, still active) ───────────────
+    active_deals_qs = (
+        Deal.objects.filter(seller=user, status="active")
+        .select_related("from_currency", "to_currency")
+        .order_by("-created_at")[:5]
+    )
+    active_trades_count = Deal.objects.filter(seller=user, status="active").count()
+
+    # ── 4. Transactions this month ────────────────────────────────────────────
+    txns_this_month = Transaction.objects.filter(
+        Q(buyer=user) | Q(seller=user) | Q(user=user),
+        created_at__gte=month_start,
+    ).count()
+
+    # ── 5. Marketplace — available deals (not from this user) ────────────────
+    marketplace_deals = (
+        Deal.objects.filter(status="active")
+        .exclude(seller=user)
+        .select_related("seller", "from_currency", "to_currency")
+        .order_by("-created_at")[:6]
+    )
+
+    # ── 6. Recent activity (last 8 transactions) ──────────────────────────────
+    recent_txns = (
+        Transaction.objects.filter(
+            Q(buyer=user) | Q(seller=user) | Q(user=user)
+        )
+        .select_related("from_currency", "to_currency", "buyer", "seller", "user")
+        .order_by("-created_at")[:8]
+    )
+
+    recent_activity = []
+    for txn in recent_txns:
+        # Determine display label
+        label = txn.get_type_display()
+
+        # Counterparty name for P2P types
+        counterparty = ""
+        if txn.type == "purchase" and txn.deal:
+            counterparty = txn.deal.seller.name or txn.deal.seller.email
+        elif txn.type == "sale" and txn.deal:
+            sibling = txn.deal.transactions.filter(
+                type="purchase"
+            ).select_related("buyer").first()
+            if sibling and sibling.buyer:
+                counterparty = sibling.buyer.name or sibling.buyer.email
+
+        # Amount string — show what the user received where possible
+        if txn.received_amount:
+            amount_str = f"+{txn.received_amount:,.2f} {txn.to_currency.code}"
+        else:
+            amount_str = f"{txn.amount:,.2f} {txn.from_currency.code}"
+
+        recent_activity.append({
+            "type":         label,
+            "pair":         f"{txn.from_currency.code} → {txn.to_currency.code}",
+            "amount":       amount_str,
+            "counterparty": counterparty,
+            "status":       txn.status,
+            "timestamp":    txn.created_at,
+        })
+
+    # ── 7. Exchange rates ─────────────────────────────────────────────────────
     try:
         exchange_rates = (
             ExchangeRate.objects.select_related("from_currency", "to_currency")
             .filter(from_currency__code="USD")
             .order_by("to_currency__code")[:6]
         )
-    except:
+    except Exception:
         exchange_rates = []
 
-    recent_transactions = (
-        Transaction.objects.filter(
-            Q(buyer=request.user) | Q(seller=request.user) | Q(user=request.user)
-        )
-        .select_related("from_currency", "to_currency", "buyer", "seller", "user")
-        .order_by("-created_at")[:5]
+    # ── 8. Profile summary object ─────────────────────────────────────────────
+    total_balance = wallet.balance_total if wallet else Decimal("0")
+    monthly_profit_total = sum(p["amount"] for p in monthly_profits)
+
+    profile = SimpleNamespace(
+        total_balance_usd=total_balance,
+        active_trades=active_trades_count,
+        monthly_profit_usd=monthly_profit_total,
     )
 
-    recent_activity = []
-    for txn in recent_transactions:
-        activity = SimpleNamespace(
-            type=txn.get_type_display()
-            if hasattr(txn, "get_type_display")
-            else txn.type.upper(),
-            description=f"{txn.from_currency.code} → {txn.to_currency.code}",
-            amount=f"{txn.amount}",
-            timestamp=txn.created_at,
-            status=txn.status,
-        )
-        recent_activity.append(activity)
-
-    total_deposit_amount = ActivityRecord.objects.filter(
-        user=request.user, activity_type="deposit"
-    ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
-
-    return render(
-        request,
-        "dashboard.html",
-        {
-            "wallet": wallet,
-            "profile": _dashboard_profile(request.user, wallet),
-            "exchange_rates": exchange_rates,
-            "recent_activity": recent_activity,
-            "total_balance_change_display": f"${total_deposit_amount:,.2f}",
-            "is_admin_user": False,
-        },
-    )
+    return render(request, "dashboard.html", {
+        "wallet":             wallet,
+        "profile":            profile,
+        "wallet_balances":    wallet_balances,
+        "monthly_profits":    monthly_profits,
+        "active_deals":       active_deals_qs,
+        "active_trades_count": active_trades_count,
+        "marketplace_deals":  marketplace_deals,
+        "transactions_this_month": txns_this_month,
+        "recent_activity":    recent_activity,
+        "exchange_rates":     exchange_rates,
+        "total_balance_change_display": f"${total_balance:,.2f}",
+        "is_admin_user":      False,
+    })
 
 
 def logout_view(request):

@@ -1604,3 +1604,252 @@ video {
         padding-right: 2rem;
     }
 }
+
+/* ============================================================
+   DASHBOARD ADDITIONS — wallet balances, deals, earnings
+   ============================================================ */
+
+.section-link {
+  font-size: 0.75rem;
+  color: #ff9500;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+.section-link:hover { opacity: 1; }
+
+.section-meta {
+  font-size: 0.75rem;
+  color: #9aa6b2;
+}
+
+/* ── E-Wallet / Earnings list ── */
+.wallet-balance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wallet-balance-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1a2838;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.wallet-balance-item:hover { background: rgb(18 32 53); }
+
+.wallet-currency-badge {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgb(42 31 0);
+  color: #ff9500;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profit-badge {
+  background: rgb(26 77 46);
+  color: #2dd4bf;
+}
+
+.wallet-balance-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.15rem;
+}
+
+.wallet-currency-name {
+  font-size: 0.78rem;
+  color: #9aa6b2;
+}
+
+.wallet-balance-amount {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.profit-amount { color: #2dd4bf; }
+
+/* ── Deal list ── */
+.deal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.deal-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1a2838;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.deal-item:hover { background: rgb(18 32 53); }
+
+.deal-pair {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.deal-from  { color: #ffffff; }
+.deal-arrow { color: #9aa6b2; font-size: 0.75rem; }
+.deal-to    { color: #ff9500; }
+
+.deal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.deal-amount {
+  font-size: 0.82rem;
+  color: #e6eef8;
+  font-variant-numeric: tabular-nums;
+}
+
+.deal-rate    { font-size: 0.72rem; color: #9aa6b2; }
+.deal-seller,
+.deal-expires { font-size: 0.72rem; color: #9aa6b2; white-space: nowrap; }
+
+.deal-trend      { font-size: 0.75rem; font-weight: 700; min-width: 20px; text-align: center; }
+.deal-trend-up   { color: #2dd4bf; }
+.deal-trend-down { color: #ef4444; }
+
+.deal-accept-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ff9500;
+  border: 1px solid rgba(255,149,0,0.4);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.deal-accept-btn:hover { background: rgba(255,149,0,0.12); }
+
+/* ── Activity enhancements ── */
+.activity-counterparty {
+  color: #9aa6b2;
+  font-size: 0.78rem;
+}
+
+.activity-status-label        { font-size: 0.7rem; font-weight: 600; }
+.activity-status-completed    { color: #2dd4bf; }
+.activity-status-pending      { color: #ffb347; }
+.activity-status-failed       { color: #ef4444; }
+.activity-status-dispute_raised { color: #f97316; }
+
+/* Activity type pill colours keyed to transaction status */
+.activity-type-completed      { background: rgb(26 77 46);   color: #2dd4bf; }
+.activity-type-pending        { background: rgb(42 31 0);    color: #ffb347; }
+.activity-type-failed         { background: rgb(90 20 20);   color: #ef4444; }
+.activity-type-dispute_raised { background: rgb(70 30 10);   color: #f97316; }
+
+/* Empty state (reuse existing .txn-empty if present, else add) */
+.txn-empty        { text-align: center; padding: 2rem 0; }
+.txn-empty-title  { font-size: 0.95rem; font-weight: 600; color: #e6eef8; margin-bottom: 0.25rem; }
+.txn-empty-subtitle { font-size: 0.8rem; color: #9aa6b2; }
+.txn-empty-subtitle a { color: #ff9500; }
+
+/* dashboard-content rows need vertical gap between rows */
+.dashboard-content { margin-bottom: 1.5rem; }
+
+/* ── Stat card: E-Wallet Balances & Monthly Earnings ── */
+
+.stat-card-wallet,
+.stat-card-earnings {
+  cursor: default;
+}
+
+.stat-manage-link {
+  font-size: 0.7rem;
+  color: #ff9500;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.stat-manage-link:hover { opacity: 1; }
+
+/* Wallet rows inside the stat card */
+.stat-wallet-list,
+.stat-earnings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1a2838 transparent;
+}
+
+.stat-wallet-row,
+.stat-earnings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #1a2838;
+  border-radius: 6px;
+}
+
+.stat-wallet-code,
+.stat-earnings-code {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ff9500;
+  min-width: 32px;
+}
+
+.stat-earnings-code { color: #2dd4bf; }
+
+.stat-wallet-amount {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-earnings-amount {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2dd4bf;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-wallet-empty {
+  font-size: 0.75rem;
+  color: #6b7a8d;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+/* Make wallet/earnings cards taller to fit the list */
+.stat-card-wallet,
+.stat-card-earnings {
+  min-height: 260px;
+}
