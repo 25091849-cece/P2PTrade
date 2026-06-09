@@ -47,18 +47,76 @@
   </div>
 
   {# ── Active Deals (unchanged) ── #}
-  <div class="stat-card">
-    <div class="stat-card-header">
-      <div class="stat-icon active-trades" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 16l6-6 4 4 6-6"/>
-          <path d="M14 8h6v6"/>
-        </svg>
-      </div>
+  <div class="stat-card stat-card-deals">
+  <div class="stat-card-header">
+    <div class="stat-icon active-trades" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 16l6-6 4 4 6-6"/>
+        <path d="M14 8h6v6"/>
+      </svg>
     </div>
-    <div class="stat-label">Active Deals</div>
-    <div class="stat-value">{{ active_trades_count }}</div>
+    <a href="{% url_or_placeholder 'marketplace:index' %}" class="stat-deals-link">View all ↗</a>
   </div>
+
+  <div class="stat-label">Active Deals</div>
+
+  <div class="stat-deals-row">
+    <div class="stat-value">{{ active_trades_count }}</div>
+    <div class="stat-deals-vs">
+      <span class="stat-deals-cap">of {{ active_deals_max }} max</span>
+      <span class="stat-deals-today">↑ +{{ active_deals_today }} today</span>
+    </div>
+  </div>
+
+  <div class="stat-deals-progress">
+    <div class="stat-deals-prog-lbl">
+      <span>Capacity used</span>
+      <strong>{{ active_deals_pct }}%</strong>
+    </div>
+    <div class="stat-deals-track">
+      <div class="stat-deals-fill" style="width:{{ active_deals_pct }}%"></div>
+    </div>
+  </div>
+
+  {% if active_deals %}
+  <div class="stat-deals-divider"></div>
+  {% for deal in active_deals|slice:":2" %}
+  <div class="stat-deals-mini">
+    <div class="stat-dm-pair">
+      <span class="stat-dm-from">{{ deal.from_currency.code }}</span>
+      <span class="stat-dm-arr">→</span>
+      <span class="stat-dm-to">{{ deal.to_currency.code }}</span>
+    </div>
+    <div class="stat-dm-info">
+      <span class="stat-dm-amt">{{ deal.amount|floatformat:2 }} {{ deal.from_currency.code }}</span>
+      <span class="stat-dm-exp">Expires {{ deal.expires_at|timeuntil }}</span>
+    </div>
+    <span class="stat-dm-trend stat-dm-trend-{{ deal.trend }}">
+      {% if deal.trend == 'up' %}▲{% else %}▼{% endif %}
+    </span>
+  </div>
+  {% endfor %}
+
+  <div class="stat-deals-divider"></div>
+
+  <div class="stat-deals-footer">
+    <div class="stat-deals-foot-item">
+      <span class="stat-deals-foot-val stat-fv-teal">{{ active_deals_total_value|floatformat:0 }}</span>
+      <span class="stat-deals-foot-lbl">Total value</span>
+    </div>
+    <div class="stat-deals-foot-sep"></div>
+    <div class="stat-deals-foot-item">
+      <span class="stat-deals-foot-val stat-fv-amber">{{ active_deals_avg_expiry }}h</span>
+      <span class="stat-deals-foot-lbl">Avg expiry</span>
+    </div>
+    <div class="stat-deals-foot-sep"></div>
+    <div class="stat-deals-foot-item">
+      <span class="stat-deals-foot-val">{{ active_deals_avg_rate }}</span>
+      <span class="stat-deals-foot-lbl">Avg rate</span>
+    </div>
+  </div>
+  {% endif %}
+</div>
 
   {# ── Monthly Earnings (replaces Monthly Received) ── #}
   <div class="stat-card stat-card-earnings">
@@ -214,32 +272,6 @@
 
   {# ── Row 3: Exchange Rates + Recent Activity ──────────────────────────────── #}
   <div class="dashboard-content">
-
-    <section class="content-section">
-      <div class="section-header">
-        <h3 class="section-title">Live Exchange Rates</h3>
-        <span class="section-icon">↩️</span>
-      </div>
-      <div class="exchange-rates-list">
-        {% if exchange_rates %}
-          {% for rate in exchange_rates %}
-          <div class="exchange-rate-item">
-            <div class="rate-pair">{{ rate.from_currency.code }} → {{ rate.to_currency.code }}</div>
-            <div class="rate-value">{{ rate.rate }}</div>
-            <div class="rate-change {% if rate.change_percent >= 0 %}text-green{% else %}text-red{% endif %}">
-              {% if rate.change_percent >= 0 %}▲{% else %}▼{% endif %} {{ rate.change_percent|floatformat:2 }}%
-            </div>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div class="exchange-rate-item">
-            <div class="rate-pair">No exchange rates available</div>
-            <div class="rate-value">—</div>
-          </div>
-        {% endif %}
-      </div>
-      <a href="{% url_or_placeholder 'marketplace:index' %}" class="view-marketplace-btn">View Marketplace ↗</a>
-    </section>
 
     <section class="content-section recent-activity-section">
       <div class="section-header">

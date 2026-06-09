@@ -270,6 +270,34 @@ def dashboard_page(request):
     )
     active_trades_count = Deal.objects.filter(seller=user, status="active").count()
 
+    # Active deals enriched stats
+    DEALS_MAX = 5  # adjust to your platform's limit per user
+    active_deals_list = list(active_deals_qs)
+
+    active_deals_today = Deal.objects.filter(
+        seller=user,
+        status='active',
+        created_at__date=now.date(),
+    ).count()
+
+    active_deals_pct = int((active_trades_count / DEALS_MAX) * 100) if DEALS_MAX else 0
+
+    # Total value and avg rate across active deals (in from_currency units)
+    active_deals_total_value = sum(d.amount for d in active_deals_list)
+    active_deals_avg_rate = (
+        round(sum(d.rate for d in active_deals_list) / len(active_deals_list), 4)
+        if active_deals_list else 0
+    )
+
+    # Average hours remaining until expiry
+    active_deals_avg_expiry = 0
+    if active_deals_list:
+        avg_secs = sum(
+            max((d.expires_at - now).total_seconds(), 0)
+            for d in active_deals_list
+        ) / len(active_deals_list)
+        active_deals_avg_expiry = int(avg_secs / 3600)
+
     # ── 4. Transactions this month ────────────────────────────────────────────
     txns_this_month = Transaction.objects.filter(
         Q(buyer=user) | Q(seller=user) | Q(user=user),
@@ -377,6 +405,13 @@ def dashboard_page(request):
         'txn_pending_pct': int(txn_pending / _total * 100),
         'txn_failed_pct': int(txn_failed / _total * 100),
         'txn_dispute_pct': int(txn_dispute / _total * 100),
+        # Add to context:
+        'active_deals_max': DEALS_MAX,
+        'active_deals_today': active_deals_today,
+        'active_deals_pct': active_deals_pct,
+        'active_deals_total_value': active_deals_total_value,
+        'active_deals_avg_rate': active_deals_avg_rate,
+        'active_deals_avg_expiry': active_deals_avg_expiry,
 
     })
 
