@@ -85,18 +85,51 @@
   </div>
 
   {# ── Transactions This Month (unchanged) ── #}
-  <div class="stat-card">
-    <div class="stat-card-header">
-      <div class="stat-icon transactions" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="8"/>
-          <path d="M12 8v4l3 2"/>
-        </svg>
-      </div>
+  <div class="stat-card stat-card-txn">
+  <div class="stat-card-header">
+    <div class="stat-icon transactions" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>
+      </svg>
     </div>
-    <div class="stat-label">Transactions This Month</div>
-    <div class="stat-value">{{ transactions_this_month }}</div>
+    <span class="stat-meta">This month</span>
   </div>
+  <div class="stat-label">Transactions</div>
+  <div class="stat-txn-big">
+    <span class="stat-value">{{ transactions_this_month }}</span>
+    <div class="stat-txn-vs-block">
+      <span class="stat-txn-vs-label">vs last month</span>
+      <span class="stat-txn-vs-change">↑ +3</span>
+    </div>
+  </div>
+  <div class="stat-txn-breakdown">
+    <div class="stat-txn-item">
+      <span class="stat-txn-lbl">Completed</span>
+      <span class="stat-txn-val txn-completed">{{ txn_completed }}</span>
+    </div>
+    <div class="stat-txn-item">
+      <span class="stat-txn-lbl">Pending</span>
+      <span class="stat-txn-val txn-pending">{{ txn_pending }}</span>
+    </div>
+    <div class="stat-txn-item">
+      <span class="stat-txn-lbl">Failed</span>
+      <span class="stat-txn-val txn-failed">{{ txn_failed }}</span>
+    </div>
+    <div class="stat-txn-item">
+      <span class="stat-txn-lbl">Dispute</span>
+      <span class="stat-txn-val txn-dispute">{{ txn_dispute }}</span>
+    </div>
+  </div>
+  <div class="stat-txn-bar-wrap">
+    <div class="stat-txn-bar-lbl">Status breakdown</div>
+    <div class="stat-txn-track">
+      <div class="stat-txn-seg seg-completed" style="width:{{ txn_completed_pct }}%"></div>
+      <div class="stat-txn-seg seg-pending"   style="width:{{ txn_pending_pct }}%"></div>
+      <div class="stat-txn-seg seg-failed"    style="width:{{ txn_failed_pct }}%"></div>
+      <div class="stat-txn-seg seg-dispute"   style="width:{{ txn_dispute_pct }}%"></div>
+    </div>
+  </div>
+</div>
 
 </div>
 

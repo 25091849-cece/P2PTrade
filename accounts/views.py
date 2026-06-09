@@ -276,6 +276,17 @@ def dashboard_page(request):
         created_at__gte=month_start,
     ).count()
 
+    txn_qs = Transaction.objects.filter(
+        Q(buyer=user) | Q(seller=user) | Q(user=user),
+        created_at__gte=month_start,
+    )
+    txn_completed = txn_qs.filter(status='completed').count()
+    txn_pending = txn_qs.filter(status='pending').count()
+    txn_failed = txn_qs.filter(status='failed').count()
+    txn_dispute = txn_qs.filter(status='dispute_raised').count()
+    _total = max(txn_completed + txn_pending + txn_failed + txn_dispute, 1)
+
+
     # ── 5. Marketplace — available deals (not from this user) ────────────────
     marketplace_deals = (
         Deal.objects.filter(status="active")
@@ -357,6 +368,16 @@ def dashboard_page(request):
         "exchange_rates":     exchange_rates,
         "total_balance_change_display": f"${total_balance:,.2f}",
         "is_admin_user":      False,
+        # add to the return render(...) context dict:
+        'txn_completed': txn_completed,
+        'txn_pending': txn_pending,
+        'txn_failed': txn_failed,
+        'txn_dispute': txn_dispute,
+        'txn_completed_pct': int(txn_completed / _total * 100),
+        'txn_pending_pct': int(txn_pending / _total * 100),
+        'txn_failed_pct': int(txn_failed / _total * 100),
+        'txn_dispute_pct': int(txn_dispute / _total * 100),
+
     })
 
 

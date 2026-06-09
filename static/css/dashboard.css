@@ -1853,3 +1853,91 @@ video {
 .stat-card-earnings {
   min-height: 260px;
 }
+
+/* ── Transactions This Month — rich breakdown card ── */
+.stat-card-txn { cursor: default; }
+
+.stat-txn-big {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.stat-txn-vs-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding-top: .35rem;
+}
+
+.stat-txn-vs-label {
+  font-size: .65rem;
+  color: #6b7a8d;
+  white-space: nowrap;
+}
+
+.stat-txn-vs-change {
+  font-size: .72rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.stat-txn-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .35rem;
+  margin-bottom: .75rem;
+}
+
+.stat-txn-item {
+  padding: .4rem .5rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid #1a2838;
+  border-radius: 7px;
+}
+
+.stat-txn-lbl {
+  display: block;
+  font-size: .6rem;
+  color: #6b7a8d;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 2px;
+}
+
+.stat-txn-val {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.txn-completed { color: #22c55e; }
+.txn-pending   { color: #f59e0b; }
+.txn-failed    { color: #ef4444; }
+.txn-dispute   { color: #f97316; }
+
+.stat-txn-bar-wrap { margin-top: .25rem; }
+
+.stat-txn-bar-lbl {
+  font-size: .6rem;
+  color: #6b7a8d;
+  margin-bottom: 4px;
+}
+
+.stat-txn-track {
+  height: 4px;
+  background: #1a2838;
+  border-radius: 3px;
+  display: flex;
+  overflow: hidden;
+  gap: 1px;
+}
+
+.stat-txn-seg   { height: 4px; border-radius: 3px; min-width: 2px; }
+.seg-completed  { background: #22c55e; }
+.seg-pending    { background: #f59e0b; }
+.seg-failed     { background: #ef4444; }
+.seg-dispute    { background: #f97316; }
