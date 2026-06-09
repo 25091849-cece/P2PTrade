@@ -1799,7 +1799,7 @@ video {
   flex-direction: column;
   gap: 0.4rem;
   margin-top: 0.75rem;
-  max-height: 160px;
+  /*max-height: 160px;*/
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #1a2838 transparent;

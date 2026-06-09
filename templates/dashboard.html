@@ -191,46 +191,8 @@
 
 </div>
 
-  {# ── Row 2: Your Active Deals + Marketplace Deals ────────────────────────── #}
+  {# ── Row 2: Marketplace Deals + Recent Activity ────────────────────────── #}
   <div class="dashboard-content">
-
-    <section class="content-section">
-      <div class="section-header">
-        <h3 class="section-title">Your Active Deals</h3>
-        <a href="{% url_or_placeholder 'marketplace:index' %}" class="section-link">View all ↗</a>
-      </div>
-
-      {% if active_deals %}
-        <div class="deal-list">
-          {% for deal in active_deals %}
-          <div class="deal-item">
-            <div class="deal-pair">
-              <span class="deal-from">{{ deal.from_currency.code }}</span>
-              <span class="deal-arrow">→</span>
-              <span class="deal-to">{{ deal.to_currency.code }}</span>
-            </div>
-            <div class="deal-meta">
-              <span class="deal-amount">{{ deal.amount|floatformat:2 }} {{ deal.from_currency.code }}</span>
-              <span class="deal-rate">@ {{ deal.rate }}</span>
-            </div>
-            <div class="deal-expires">
-              Expires {{ deal.expires_at|timesince }}
-            </div>
-            <div class="deal-trend deal-trend-{{ deal.trend }}">
-              {% if deal.trend == 'up' %}▲{% else %}▼{% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="txn-empty">
-          <p class="txn-empty-title">No active deals</p>
-          <p class="txn-empty-subtitle">
-            <a href="{% url_or_placeholder 'marketplace:create' %}">Create a deal ↗</a>
-          </p>
-        </div>
-      {% endif %}
-    </section>
 
     <section class="content-section">
       <div class="section-header">
@@ -267,11 +229,6 @@
         </div>
       {% endif %}
     </section>
-
-  </div>
-
-  {# ── Row 3: Exchange Rates + Recent Activity ──────────────────────────────── #}
-  <div class="dashboard-content">
 
     <section class="content-section recent-activity-section">
       <div class="section-header">
