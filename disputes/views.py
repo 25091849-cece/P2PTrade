@@ -275,7 +275,7 @@ def detail(request, dispute_id):
 # ============================================================================
 # User: Raise / Cancel dispute (preserves original UI; adds admin notification)
 # ============================================================================
-@login_required
+
 @login_required
 def raise_dispute(request, txn_id):
     txn = get_object_or_404(
@@ -283,21 +283,19 @@ def raise_dispute(request, txn_id):
             'buyer', 'seller', 'from_currency', 'to_currency', 'deal'
         ),
         pk=txn_id,
-        status='completed',
+        # ← Remove status='completed' from here
     )
 
     user = request.user
 
-    # ── Resolve both parties via deal, since one FK is now null ──────────────
+    # ── Resolve both parties via deal ────────────────────────────────────────
     if txn.deal:
         actual_seller = txn.deal.seller
-        # Buyer is whoever accepted the deal — find them from the purchase txn
         purchase_txn = txn.deal.transactions.filter(
             type='purchase'
         ).select_related('buyer').first()
         actual_buyer = purchase_txn.buyer if purchase_txn else None
     else:
-        # Fallback for deposits/withdrawals that have no deal
         actual_buyer = txn.buyer
         actual_seller = txn.seller
 
@@ -305,7 +303,19 @@ def raise_dispute(request, txn_id):
     if user not in (actual_buyer, actual_seller):
         raise Http404
 
+    # ── Status check — show friendly error instead of 404 ────────────────────
+    if txn.status != 'completed':
+        if txn.status == 'dispute_raised':
+            messages.error(request, 'A dispute has already been raised for this transaction.')
+        elif txn.status == 'pending':
+            messages.error(request, 'You cannot raise a dispute on a pending transaction.')
+        else:
+            messages.error(request, f'Disputes can only be raised on completed transactions (current status: {txn.status}).')
+        return redirect('transactions:index')
+
+    # ── Already has a dispute ─────────────────────────────────────────────────
     if hasattr(txn, 'dispute'):
+        messages.error(request, 'A dispute already exists for this transaction.')
         return redirect('transactions:index')
 
     counterparty = actual_seller if user == actual_buyer else actual_buyer
@@ -316,8 +326,8 @@ def raise_dispute(request, txn_id):
         if reason:
             dispute = Dispute.objects.create(
                 transaction=txn,
-                buyer=actual_buyer,       # ← resolved, never None
-                seller=actual_seller,     # ← resolved, never None
+                buyer=actual_buyer,
+                seller=actual_seller,
                 raised_by=user,
                 from_currency=txn.from_currency,
                 to_currency=txn.to_currency,
@@ -338,30 +348,35 @@ def raise_dispute(request, txn_id):
 
     return render(request, 'disputes/raise.html', {
         'txn': txn,
-        'counterparty': counterparty,   # always a real User now
+        'counterparty': counterparty,
     })
-
 
 @login_required
 def cancel_dispute(request, txn_id):
     if request.method != 'POST':
         return redirect('transactions:index')
 
-    txn = get_object_or_404(Transaction, pk=txn_id, status='dispute_raised')
+    # ── Remove status='dispute_raised' from the lookup ────────────────────────
+    txn = get_object_or_404(Transaction, pk=txn_id)
     user = request.user
-    # After
+
+    # Resolve parties via deal
     if txn.deal:
+        actual_seller = txn.deal.seller
         purchase_txn = txn.deal.transactions.filter(
             type='purchase'
         ).select_related('buyer').first()
         actual_buyer = purchase_txn.buyer if purchase_txn else None
-        actual_seller = txn.deal.seller
     else:
         actual_buyer = txn.buyer
         actual_seller = txn.seller
 
     if user not in (actual_buyer, actual_seller):
         raise Http404
+
+    if txn.status != 'dispute_raised':
+        messages.error(request, 'This transaction does not have an active dispute.')
+        return redirect('transactions:index')
 
     if hasattr(txn, 'dispute'):
         txn.dispute.delete()
