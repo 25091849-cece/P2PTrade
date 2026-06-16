@@ -89,7 +89,7 @@
               <div class="txn-detail-header">
                 <span class="txn-detail-title">Transaction Details</span>
                 <div style="display: flex; gap: 0.5rem;">
-                  {% if txn.status == 'completed' and txn.type != 'exchange' and txn.type != 'deposit' and txn.type != 'withdrawal' %}
+                  {% if txn.status == 'completed' and txn.type == 'purchase' or txn.type == 'sale' %}
                   <a class="txn-dispute-btn" href="{% url 'disputes:raise' txn.id %}">
                     ⚑ Raise a Dispute
                   </a>

@@ -283,12 +283,16 @@ def raise_dispute(request, txn_id):
             'buyer', 'seller', 'from_currency', 'to_currency', 'deal'
         ),
         pk=txn_id,
-        # ← Remove status='completed' from here
     )
+
+    # Disputes only make sense on P2P trade records
+    if txn.type not in ('purchase', 'sale'):
+        messages.error(request, 'Disputes can only be raised on purchase or sale transactions.')
+        return redirect('transactions:index')
 
     user = request.user
 
-    # ── Resolve both parties via deal ────────────────────────────────────────
+    # Resolve both parties via deal (handles null buyer/seller FKs)
     if txn.deal:
         actual_seller = txn.deal.seller
         purchase_txn = txn.deal.transactions.filter(
@@ -299,21 +303,13 @@ def raise_dispute(request, txn_id):
         actual_buyer = txn.buyer
         actual_seller = txn.seller
 
-    # ── Auth check ────────────────────────────────────────────────────────────
     if user not in (actual_buyer, actual_seller):
         raise Http404
 
-    # ── Status check — show friendly error instead of 404 ────────────────────
     if txn.status != 'completed':
-        if txn.status == 'dispute_raised':
-            messages.error(request, 'A dispute has already been raised for this transaction.')
-        elif txn.status == 'pending':
-            messages.error(request, 'You cannot raise a dispute on a pending transaction.')
-        else:
-            messages.error(request, f'Disputes can only be raised on completed transactions (current status: {txn.status}).')
+        messages.error(request, f'Disputes can only be raised on completed transactions (current status: {txn.get_status_display()}).')
         return redirect('transactions:index')
 
-    # ── Already has a dispute ─────────────────────────────────────────────────
     if hasattr(txn, 'dispute'):
         messages.error(request, 'A dispute already exists for this transaction.')
         return redirect('transactions:index')
@@ -338,7 +334,6 @@ def raise_dispute(request, txn_id):
             )
             txn.status = 'dispute_raised'
             txn.save()
-
             DisputeActivityLog.objects.create(
                 dispute=dispute, actor=user,
                 action=f'Dispute raised by {user.email}.',
